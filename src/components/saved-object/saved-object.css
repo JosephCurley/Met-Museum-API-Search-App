@@ -1,0 +1,12 @@
+.saved-object{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+  align-items: center;
+}
+
+.saved-object__image {
+	display: block;
+	height: 100px;
+	width: auto;
+}

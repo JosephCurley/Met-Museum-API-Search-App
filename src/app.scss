@@ -1,0 +1,25 @@
+* {
+	box-sizing: border-box;
+}
+
+.object-search-app {
+	grid-column-gap: 40px;
+	grid-row-gap: 40px;
+	display: flex;
+	flex-direction: column;
+	@media (orientation: landscape) {
+		flex-direction: row;
+	}
+}
+
+.saved-objects {
+
+}
+
+.saved-objects__grid {
+	flex-direction: column;
+	column-gap: 16px;
+	display: flex;
+	flex-wrap: wrap;
+	row-gap: 16px;
+}
