@@ -88,9 +88,7 @@ const App = () => {
     setObject(newObject);
   };
 
-  const saveItemToLocalStorage = () => {
-    !localStorage.getItem('savedObjects') && localStorage.setItem('session', JSON.stringify({}));
-
+  const addItemToStorage = () => {
     const newObject = {
       objectName: object.objectName,
       primaryImageSmall: object.primaryImageSmall
@@ -104,32 +102,58 @@ const App = () => {
     console.log(localStorage.getItem('savedObjects'));
   };
 
+  const removeItemFromStorage = () => {
+    let objectOfSavedObjects = objectOfSavedObjects = JSON.parse(localStorage.getItem('savedObjects')) || {};
+    delete objectOfSavedObjects[object.objectID];
+    localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
+    setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+  };
+
+  const updateLocalStorage = () => {
+    !localStorage.getItem('savedObjects') && localStorage.setItem('session', JSON.stringify({}));
+
+    savedObjects[object.objectID] ? removeItemFromStorage() : addItemToStorage();
+  };
+
   return (
     <div class="object-search-app">
-      <section className="object-search">
+      <section className="object-search__section">
         <input
-          key="random1"
+          className="object-search__input"
+          key="objectSearchBar"
           placeholder="Search Objects"
           onChange={e => fetchObjects(e.target.value)}
         />
         <div className="object-result">
           <div>
-            <h1>{object.objectName}</h1>
-            <img src={object.primaryImageSmall} alt={object.objectName} />
+            <div className="object-result__title-box">
+              <h1>{object.objectName}</h1>
+              <button
+                onClick={updateLocalStorage}
+                className="object-result__save-button"
+                type="submit">
+                {savedObjects[object.objectID] ? "Remove": "Save ♥️"}
+              </button>
+            </div>
+            {object.primaryImageSmall && <img src={object.primaryImageSmall} alt={object.objectName} />}
+            <div>
+              <div className="object-result__info">Title: {object.title}</div>
+              <div className="object-result__info">accessionYear: {object.accessionYear}</div>
+              <div className="object-result__info">accessionNumber: {object.accessionNumber}</div>
+            </div>
           </div>
-          <button
-            onClick={saveItemToLocalStorage}
-            className="object-result__save-button"
-            type="submit">
-            Save ♥️
-          </button>
         </div>
       </section>
       <section className="saved-objects">
         <h1>Saved Objects</h1>
         <div class="saved-objects__grid">
           {Object.keys(savedObjects).map((object, i)=> {
-            return <SavedObject key={i} objectName={savedObjects[object].objectName} primaryImageSmall={savedObjects[object].primaryImageSmall} />
+            return <SavedObject
+              key={i}
+              objectNumber={object}
+              fetchObjects={fetchObjects}
+              objectName={savedObjects[object].objectName}
+              primaryImageSmall={savedObjects[object].primaryImageSmall} />
           })}
         </div>
       </section>
