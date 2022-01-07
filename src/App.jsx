@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
+import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import "./app.scss";
 
@@ -79,6 +80,7 @@ const objectData = {
 const App = () => {
   const [object, setObject] = useState(objectData);
   const [savedObjects, setSavedObjects] = useState(JSON.parse(localStorage.getItem('savedObjects')) || {});
+	const objectsGridRef = React.createRef();
   useEffect(() => {}, []);
 
   const fetchObjects = async objectID => {
@@ -90,7 +92,7 @@ const App = () => {
 
   const addItemToStorage = () => {
     const newObject = {
-      objectName: object.objectName,
+      title: object.title,
       primaryImageSmall: object.primaryImageSmall
     };
 
@@ -115,6 +117,12 @@ const App = () => {
     savedObjects[object.objectID] ? removeItemFromStorage() : addItemToStorage();
   };
 
+	const backToTop = () => {
+		objectsGridRef.current.scrollIntoView({
+			behavior: "smooth",
+		});
+	};
+
   return (
     <div class="object-search-app">
       <section className="object-search__section">
@@ -124,35 +132,23 @@ const App = () => {
           placeholder="Search Objects"
           onChange={e => fetchObjects(e.target.value)}
         />
-        <div className="object-result">
-          <div>
-            <div className="object-result__title-box">
-              <h1>{object.objectName}</h1>
-              <button
-                onClick={updateLocalStorage}
-                className="object-result__save-button"
-                type="submit">
-                {savedObjects[object.objectID] ? "Remove": "Save ♥️"}
-              </button>
-            </div>
-            {object.primaryImageSmall && <img src={object.primaryImageSmall} alt={object.objectName} />}
-            <div>
-              <div className="object-result__info">Title: {object.title}</div>
-              <div className="object-result__info">accessionYear: {object.accessionYear}</div>
-              <div className="object-result__info">accessionNumber: {object.accessionNumber}</div>
-            </div>
-          </div>
-        </div>
+        <ActiveObject
+          savedObjects={savedObjects}
+          object={object}
+          updateLocalStorage={updateLocalStorage}/>
       </section>
       <section className="saved-objects">
-        <h1>Saved Objects</h1>
-        <div class="saved-objects__grid">
+				<div className="saved-objects__title-bar">
+        	<h1 className="saved-objects__header">Saved Objects</h1>
+					{Object.keys(savedObjects).length > 10 && <a className="saved-objects__top-link" onClick={e => backToTop()}>Back To Top</a>}
+				</div>
+        <div class="saved-objects__grid" ref={objectsGridRef}>
           {Object.keys(savedObjects).map((object, i)=> {
             return <SavedObject
               key={i}
               objectNumber={object}
               fetchObjects={fetchObjects}
-              objectName={savedObjects[object].objectName}
+              objectTitle={savedObjects[object].title}
               primaryImageSmall={savedObjects[object].primaryImageSmall} />
           })}
         </div>

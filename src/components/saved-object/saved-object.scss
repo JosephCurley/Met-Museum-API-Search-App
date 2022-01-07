@@ -8,11 +8,12 @@
 
 .saved-object__image {
 	display: block;
-	width: 160px;
+	width: 100%;
 	height: auto;
 	margin-bottom: 4px;
 }
 
 .saved-object__name {
-	font-weight: bold;
+	font-weight: 500;
+	line-height: 1.2;
 }

@@ -59,6 +59,7 @@
   "dependencies": {
     "@babel/plugin-transform-react-constant-elements": "7.16.0",
     "@babel/plugin-transform-react-inline-elements": "7.16.0",
+    "@metmuseum/marble": "github:metmuseum/marble",
     "babel-plugin-import": "^1.13.1",
     "babel-plugin-transform-react-pure-class-to-function": "1.0.1",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
