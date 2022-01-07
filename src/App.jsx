@@ -124,7 +124,7 @@ const App = () => {
 	};
 
   return (
-    <div class="object-search-app">
+    <div className="object-search-app">
       <section className="object-search__section">
         <input
           className="object-search__input"
@@ -142,7 +142,7 @@ const App = () => {
         	<h1 className="saved-objects__header">Saved Objects</h1>
 					{Object.keys(savedObjects).length > 10 && <a className="saved-objects__top-link" onClick={e => backToTop()}>Back To Top</a>}
 				</div>
-        <div class="saved-objects__grid" ref={objectsGridRef}>
+        <div className="saved-objects__grid" ref={objectsGridRef}>
           {Object.keys(savedObjects).map((object, i)=> {
             return <SavedObject
               key={i}
