@@ -41,6 +41,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
+              publicPath: `/${commonPaths.fontsFolder}`,
               outputPath: commonPaths.fontsFolder,
             },
           },
