@@ -10,6 +10,7 @@
 	@include primary-button--filled();
 	height: 40px;
 	min-width: 100px;
+	white-space: nonwrap;
 }
 
 .active-object__image {
