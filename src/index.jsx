@@ -13,10 +13,8 @@ const worker = createWorker({
 	await worker.load();
 	await worker.loadLanguage('eng');
 	await worker.initialize('eng');
-	const {
-		data: { text },
-	} = await worker.recognize(objectLabel);
-	console.log(text);
+	const { data } = await worker.recognize(objectLabel);
+	console.log(data);
 	await worker.terminate();
 })();
 
