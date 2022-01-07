@@ -20,7 +20,10 @@ const SavedObject = ({
 				className="saved-object__image"
 			/>
 		)}
-		<div className="saved-object__name">{objectTitle}</div>
+		<div
+			className="saved-object__name"
+			dangerouslySetInnerHTML={{ __html: objectTitle }}
+		/>
 	</div>
 );
 

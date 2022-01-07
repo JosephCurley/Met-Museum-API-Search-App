@@ -4,77 +4,93 @@ import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import './app.scss';
 
-const apiUrl =
+const searchAPI =
+	'https://collectionapi.metmuseum.org/public/collection/v1/search?q=';
+
+const objectAPI =
 	'https://collectionapi.metmuseum.org/public/collection/v1/objects/';
 
 const objectData = {
-	objectID: 909,
+	objectID: 37299,
 	isHighlight: false,
-	accessionNumber: '10.125.4',
-	accessionYear: '1910',
+	accessionNumber: 'JP1059',
+	accessionYear: '1915',
 	isPublicDomain: true,
 	primaryImage:
-		'https://images.metmuseum.org/CRDImages/ad/original/85H_ACF3077R5.jpg',
+		'https://images.metmuseum.org/CRDImages/as/original/DP135567.jpg',
 	primaryImageSmall:
-		'https://images.metmuseum.org/CRDImages/ad/web-large/85H_ACF3077R5.jpg',
-	additionalImages: [
-		'https://images.metmuseum.org/CRDImages/ad/original/12073.jpg',
+		'https://images.metmuseum.org/CRDImages/as/web-large/DP135567.jpg',
+	additionalImages: [],
+	constituents: [
+		{
+			constituentID: 11410,
+			role: 'Artist',
+			name: 'Kitagawa Utamaro',
+			constituentULAN_URL: 'http://vocab.getty.edu/page/ulan/500054492',
+			constituentWikidata_URL: 'https://www.wikidata.org/wiki/Q272045',
+			gender: '',
+		},
 	],
-	constituents: null,
-	department: 'The American Wing',
-	objectName: 'Box',
-	title: 'Box',
-	culture: 'American',
-	period: '',
+	department: 'Asian Art',
+	objectName: 'Print',
+	title: 'Shells under Water',
+	culture: 'Japan',
+	period: 'Edo period (1615–1868)',
 	dynasty: '',
 	reign: '',
 	portfolio: '',
-	artistRole: '',
+	artistRole: 'Artist',
 	artistPrefix: '',
-	artistDisplayName: '',
-	artistDisplayBio: '',
+	artistDisplayName: 'Kitagawa Utamaro',
+	artistDisplayBio: 'Japanese, ca. 1754–1806',
 	artistSuffix: '',
-	artistAlphaSort: '',
-	artistNationality: '',
-	artistBeginDate: '',
-	artistEndDate: '',
+	artistAlphaSort: 'Kitagawa Utamaro',
+	artistNationality: 'Japanese',
+	artistBeginDate: '1754',
+	artistEndDate: '1806',
 	artistGender: '',
-	artistWikidata_URL: '',
-	artistULAN_URL: '',
-	objectDate: 'ca. 1700',
-	objectBeginDate: 1697,
-	objectEndDate: 1700,
-	medium: 'Pine',
-	dimensions: '9 x 26 1/2 x 16 in. (22.9 x 67.3 x 40.6 cm)',
+	artistWikidata_URL: 'https://www.wikidata.org/wiki/Q272045',
+	artistULAN_URL: 'http://vocab.getty.edu/page/ulan/500054492',
+	objectDate: '1790',
+	objectBeginDate: 1790,
+	objectEndDate: 1790,
+	medium: 'Woodblock print; ink and color on paper',
+	dimensions: '9 1/8 x 14 7/8 in. (23.2 x 37.8 cm)',
 	measurements: [
 		{
 			elementName: 'Overall',
 			elementDescription: null,
-			elementMeasurements: { Depth: 40.6401, Height: 22.9, Width: 67.3 },
+			elementMeasurements: { Height: 23.2, Width: 37.8 },
 		},
 	],
-	creditLine: 'Gift of Mrs. Russell Sage, 1909',
-	geographyType: 'Made in',
+	creditLine: 'Gift of Estate of Samuel Isham, 1915',
+	geographyType: '',
 	city: '',
 	state: '',
 	county: '',
-	country: 'United States',
+	country: '',
 	region: '',
 	subregion: '',
 	locale: '',
 	locus: '',
 	excavation: '',
 	river: '',
-	classification: '',
+	classification: 'Prints',
 	rightsAndReproduction: '',
 	linkResource: '',
-	metadataDate: '2021-04-06T04:41:04.967Z',
+	metadataDate: '2020-09-16T18:35:19.457Z',
 	repository: 'Metropolitan Museum of Art, New York, NY',
-	objectURL: 'https://www.metmuseum.org/art/collection/search/909',
-	tags: null,
+	objectURL: 'https://www.metmuseum.org/art/collection/search/37299',
+	tags: [
+		{
+			term: 'Shells',
+			AAT_URL: 'http://vocab.getty.edu/page/aat/300011829',
+			Wikidata_URL: 'https://www.wikidata.org/wiki/Q213096',
+		},
+	],
 	objectWikidata_URL: '',
 	isTimelineWork: false,
-	GalleryNumber: '774',
+	GalleryNumber: '',
 };
 
 const App = () => {
@@ -86,10 +102,19 @@ const App = () => {
 	useEffect(() => {}, []);
 
 	const fetchObjects = async objectID => {
-		const request = await fetch(`${apiUrl}${objectID}`);
+		const request = await fetch(`${objectAPI}${objectID}`);
 		const response = await request.json();
 		const newObject = response;
 		setObject(newObject);
+	};
+
+	const searchObjects = async searchQuery => {
+		const request = await fetch(`${searchAPI}${searchQuery}`);
+		const response = await request.json();
+		const newObject = response.objectIDs[0];
+		if (newObject) {
+			fetchObjects(newObject);
+		}
 	};
 
 	const addItemToStorage = () => {
@@ -135,11 +160,12 @@ const App = () => {
 	return (
 		<div className="object-search-app">
 			<section className="object-search__section">
+				<h1>The Met Object Look Up</h1>
 				<input
 					className="object-search__input"
 					key="objectSearchBar"
 					placeholder="Search Objects"
-					onChange={e => fetchObjects(e.target.value)}
+					onChange={e => searchObjects(e.target.value)}
 				/>
 				<ActiveObject
 					savedObjects={savedObjects}

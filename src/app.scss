@@ -12,8 +12,21 @@ body {
 	margin: 0;
 }
 
+a {
+	color: inherit;
+	&:visited,
+	&:hover {
+		color: inherit;
+	}
+}
+
 h1, h2, h3, h4 {
 	margin: 0 0 0.5em;
+}
+
+h1 {
+	@include typography-h2();
+	margin: 0;
 }
 
 .object-search-app {
@@ -28,15 +41,15 @@ h1, h2, h3, h4 {
 }
 
 .object-search__section {
-	padding: 16px;
+	padding: 16px $spacing-component-margin;
 	flex-grow: 1;
 }
 
 .object-search__input {
 	width: 100%;
-	padding: 8px;
+	padding: $spacing-micro;
 	border-radius: 20px;
-	margin-bottom: 16px;
+	margin-bottom: $spacing-xxs;
 }
 
 .saved-objects {
@@ -58,6 +71,7 @@ h1, h2, h3, h4 {
 }
 
 .saved-objects__header {
+	@include typography-h3();
 	margin: 0;
 }
 

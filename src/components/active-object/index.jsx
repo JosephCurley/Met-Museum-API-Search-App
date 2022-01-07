@@ -5,7 +5,13 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 	<div className="active-object">
 		<div>
 			<div className="active-object__title-box">
-				<h1>{object.title}</h1>
+				<div>
+					<h1
+						className="active-object__header"
+						dangerouslySetInnerHTML={{ __html: object.title }}
+					/>
+					<h2 className="active-object__artist">{object.artistDisplayName}</h2>
+				</div>
 				<button
 					onClick={updateLocalStorage}
 					onKeyDown={updateLocalStorage}
@@ -24,7 +30,10 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 			<div>
 				<div className="active-object__info">
 					<span className="active-object__key">Name: </span>
-					<span className="active-object__value">{object.objectName}</span>
+					<span
+						className="active-object__value"
+						dangerouslySetInnerHTML={{ __html: object.objectName }}
+					/>
 				</div>
 
 				<div className="active-object__info">
@@ -40,6 +49,18 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 				<div className="active-object__info">
 					<span className="active-object__key">Department: </span>
 					<span className="active-object__value">{object.department}</span>
+				</div>
+
+				<div className="active-object__info">
+					<span className="active-object__value">
+						<a
+							href={object.objectURL}
+							target="_blank"
+							rel="noreferrer"
+							className="active-object__link">
+							View Object Page
+						</a>
+					</span>
 				</div>
 			</div>
 		</div>
