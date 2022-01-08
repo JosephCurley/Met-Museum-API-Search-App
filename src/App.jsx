@@ -19,6 +19,7 @@ const App = () => {
 	const objectsGridRef = React.createRef();
 	const searchSectionRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
+	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
@@ -123,6 +124,7 @@ const App = () => {
 
 	const copyURLtoClipboard = () => {
 		navigator.clipboard.writeText(sharableURL);
+		setSharableURLCurrent(true);
 	};
 
 	useEffect(() => {
@@ -143,6 +145,7 @@ const App = () => {
 
 	useEffect(() => {
 		setURL();
+		setSharableURLCurrent(false);
 	}, [savedObjects]);
 
 	return (
@@ -167,14 +170,13 @@ const App = () => {
 					<div>
 						<h1 className="saved-objects__header">Saved Objects</h1>
 						{sharableURL && (
-							<a
-								tabIndex="0"
-								className="saved-objects__top-link"
+							<button
+								type="button"
+								className="saved-objects__copy-link"
 								onKeyDown={copyURLtoClipboard}
-								onClick={copyURLtoClipboard}
-								role="button">
-								Copy Sharable URL
-							</a>
+								onClick={copyURLtoClipboard}>
+								{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
+							</button>
 						)}
 					</div>
 					{Object.keys(savedObjects).length > 10 && (
