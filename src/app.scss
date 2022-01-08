@@ -46,7 +46,7 @@ h1 {
 	position: sticky;
 	top: 0;
 	flex-grow: 1;
-	height: 100vh;
+	height: calc(100vh - 60px);
 	overflow: scroll;
 	@media (orientation: landscape) {
 		position: relative;
@@ -92,6 +92,7 @@ h1 {
 	backdrop-filter: blur(2px);
 	padding: $spacing-xxs $spacing-xxs $spacing-micro;
 	box-shadow: $shadow-passive;
+	min-height: 60px;
 	z-index: 99;
 }
 
