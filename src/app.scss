@@ -1,9 +1,9 @@
+$bp-small-screen: 850px;
 @import "~@metmuseum/marble/src/base/base";
 @import "font-declarations";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
-
-$bp-small-screen: 850px;
+@import "./components/sidebar/sidebar";
 
 * {
 	box-sizing: border-box;
@@ -62,54 +62,12 @@ h1 {
 	margin-bottom: $spacing-xxs;
 }
 
-.saved-objects {
-	background-color: $color-white;
-	flex-basis: auto;
-	box-shadow: $shadow-active;
-	z-index: 9;
-	@media (orientation: landscape) {
-		flex-shrink: 0;
-		flex-basis: 300px;
-		height: 100vh;
-		overflow: scroll;
-		position: sticky;
-		top: 0;
-	}
-	@media (orientation: landscape) and (min-width: $bp-small-screen) {
-		flex-basis: 450px;
-	}
-}
-
-.saved-objects__title-bar {
-	display: flex;
-	flex-wrap: wrap;
-	grid-column-gap: $spacing-xxs;
-	grid-row-gap: $spacing-xxs;
-	justify-content: space-between;
-	position: sticky;
-	top: -1px;
-	background-color: $color-white-opaque-90;
-	backdrop-filter: blur(2px);
-	padding: $spacing-xxs $spacing-xxs $spacing-micro;
-	box-shadow: $shadow-passive;
-	min-height: 60px;
-	z-index: 99;
-}
-
 .saved-objects__header {
 	@include typography-h3();
 	margin: 0;
 }
 
-.saved-objects__top-link {
-	@include button-base();
-	@include tertiary-button();
-	align-self: center;
-}
-
 .saved-objects__grid {
-	background-color: $color-white;
-	padding: $spacing-xxs;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	column-gap: 16px;

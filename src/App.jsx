@@ -17,7 +17,9 @@ const objectAPI =
 
 const App = () => {
 	const objectsGridRef = React.createRef();
+	const collectionsRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
+	const [bundleName, setBundleName] = useState('');
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
@@ -105,7 +107,7 @@ const App = () => {
 	const updateLocalStorage = () => {
 		document.activeElement.blur();
 		if (!localStorage.getItem('savedObjects')) {
-			localStorage.setItem('session', JSON.stringify({}));
+			localStorage.setItem('savedObjects', JSON.stringify({}));
 		}
 
 		if (savedObjects[activeObject.objectID]) {
@@ -115,8 +117,8 @@ const App = () => {
 		}
 	};
 
-	const backToTop = () => {
-		objectsGridRef.current.scrollIntoView({
+	const scrollToRef = ref => {
+		ref.current.scrollIntoView({
 			behavior: 'smooth',
 		});
 	};
@@ -124,6 +126,24 @@ const App = () => {
 	const copyURLtoClipboard = () => {
 		navigator.clipboard.writeText(sharableURL);
 		setSharableURLCurrent(true);
+	};
+
+	const createBundle = () => {
+		// Add Bundle to Array of Bundle Names
+		if (localStorage.getItem(`arrayOfBundleNames`) === null) {
+			localStorage.setItem(`arrayOfBundleNames`, []);
+		}
+		let arrayOfBundleNames = [];
+		arrayOfBundleNames = localStorage.getItem('arrayOfBundleNames');
+
+		arrayOfBundleNames.push(`bundle-${bundleName}`);
+		localStorage.setItem(
+			'arrayOfBundleNames',
+			JSON.stringify(arrayOfBundleNames)
+		);
+
+		// Save Bundle as bundle-bundleName
+		localStorage.setItem(`bundle-${bundleName}`, JSON.stringify(savedObjects));
 	};
 
 	useEffect(() => {
@@ -164,14 +184,14 @@ const App = () => {
 					updateLocalStorage={updateLocalStorage}
 				/>
 			</section>
-			<section className="saved-objects">
-				<div className="saved-objects__title-bar">
+			<section className="sidebar">
+				<div className="sidebar__title">
 					<h1 className="saved-objects__header">
 						<a
 							tabIndex="0"
-							className="saved-objects__top-link"
-							onClick={() => backToTop()}
-							onKeyDown={e => e.key === 'Enter' && backToTop()}
+							className="sidebar__title-link"
+							onClick={() => scrollToRef(objectsGridRef)}
+							onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
 							role="button">
 							Saved Objects
 						</a>
@@ -186,18 +206,52 @@ const App = () => {
 						</button>
 					)}
 				</div>
-				<div className="saved-objects__grid" ref={objectsGridRef}>
-					{Object.keys(savedObjects).map(savedObject => {
-						return (
-							<SavedObject
-								key={savedObject}
-								objectNumber={savedObject}
-								handleNewActiveObject={handleNewActiveObject}
-								objectTitle={savedObjects[savedObject].title}
-								primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
-							/>
-						);
-					})}
+				<div className="sidebar__section">
+					<div className="saved-objects__grid" ref={objectsGridRef}>
+						{Object.keys(savedObjects).map(savedObject => {
+							return (
+								<SavedObject
+									key={savedObject}
+									objectNumber={savedObject}
+									handleNewActiveObject={handleNewActiveObject}
+									objectTitle={savedObjects[savedObject].title}
+									primaryImageSmall={
+										savedObjects[savedObject].primaryImageSmall
+									}
+								/>
+							);
+						})}
+					</div>
+				</div>
+				<div className="sidebar__title sidebar__title--collections">
+					<h1 className="saved-objects__header">
+						<a
+							tabIndex="0"
+							className="sidebar__title-link"
+							onClick={() => scrollToRef(collectionsRef)}
+							onKeyDown={e => e.key === 'Enter' && scrollToRef(collectionsRef)}
+							role="button">
+							Collections
+						</a>
+					</h1>
+				</div>
+				<div className="sidebar__section">
+					<div ref={collectionsRef}>
+						<input
+							className="bundle-input"
+							key="bundleNameBar"
+							placeholder="Enter Bundle Name"
+							value={bundleName}
+							onChange={event => setBundleName(event.target.value)}
+						/>
+						<button
+							type="button"
+							className="saved-objects__create-bundle"
+							onClick={() => createBundle()}
+							onKeyDown={e => e.key === 'Enter' && createBundle()}>
+							Save Bundle
+						</button>
+					</div>
 				</div>
 			</section>
 		</div>
