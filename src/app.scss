@@ -56,12 +56,13 @@ h1 {
 .saved-objects {
 	position: sticky;
 	top: 0;
-	height: 100vh;
+	max-height: 100vh;
 	overflow: scroll;
-	flex-basis: 100vh;
+	flex-basis: auto;
 	box-shadow: $shadow-active;
 	@media (orientation: landscape) {
 		flex-basis: 450px;
+		height: 100vh;
 	}
 }
 
