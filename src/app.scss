@@ -56,7 +56,7 @@ h1 {
 .saved-objects {
 	position: sticky;
 	top: 0;
-	max-height: 100vh;
+	height: 100vh;
 	overflow: scroll;
 	flex-basis: 450px;
 	box-shadow: $shadow-active;
