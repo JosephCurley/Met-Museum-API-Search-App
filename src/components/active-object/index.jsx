@@ -12,13 +12,23 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 					/>
 					<h2 className="active-object__artist">{object.artistDisplayName}</h2>
 				</div>
-				<button
-					onClick={updateLocalStorage}
-					onKeyDown={updateLocalStorage}
-					className="active-object__save-button"
-					type="submit">
-					{savedObjects[object.objectID] ? 'Remove' : 'Save ♥️'}
-				</button>
+				{savedObjects[object.objectID] ? (
+					<button
+						onClick={updateLocalStorage}
+						onKeyDown={updateLocalStorage}
+						className="active-object__button active-object__button--remove"
+						type="submit">
+						Remove
+					</button>
+				) : (
+					<button
+						onClick={updateLocalStorage}
+						onKeyDown={updateLocalStorage}
+						className="active-object__button active-object__button--save"
+						type="submit">
+						Save 🤍
+					</button>
+				)}
 			</div>
 			{object.primaryImageSmall && (
 				<img

@@ -2,6 +2,7 @@
 @import "font-declarations";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
+
 * {
 	box-sizing: border-box;
 }
@@ -53,6 +54,8 @@ h1 {
 }
 
 .saved-objects {
+	position: sticky;
+	top: 0;
 	max-height: 100vh;
 	overflow: scroll;
 	flex-basis: 450px;
@@ -80,6 +83,7 @@ h1 {
 	@include tertiary-button();
 	align-self: center;
 }
+
 .saved-objects__grid {
 	padding: $spacing-xxs;
 	display: grid;

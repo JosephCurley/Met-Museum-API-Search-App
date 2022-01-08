@@ -5,12 +5,20 @@
 	margin-bottom: 20px;
 }
 
-.active-object__save-button {
+.active-object__button {
 	@include primary-button();
-	@include primary-button--filled();
 	height: 40px;
+	line-height: 0;
 	min-width: 100px;
-	white-space: nonwrap;
+	white-space: nowrap;
+}
+
+.active-object__button--save {
+	@include primary-button--filled();
+}
+
+.active-object__button--remove {
+	@include primary-button--ghost-dark();
 }
 
 .active-object__image {
