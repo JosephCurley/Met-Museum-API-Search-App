@@ -3,6 +3,7 @@ $bp-small-screen: 850px;
 @import "font-declarations";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
+@import "./components/collection-item/collection-item";
 @import "./components/sidebar/sidebar";
 
 * {
@@ -80,4 +81,9 @@ h1 {
 	@include button-reset();
 	@include typography-link();
 	align-self: center;
+}
+
+.collection-items {
+	list-style: none;
+	padding-left: 0;
 }

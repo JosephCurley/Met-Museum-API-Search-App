@@ -1,0 +1,13 @@
+.collection-item {
+	margin-bottom: $spacing-micro;
+}
+
+.collection-item__button {
+	@include button-reset();
+	@include typography-link();
+	align-self: center;
+}
+
+.collection-item__title {
+	margin-right: $spacing-micro;
+}

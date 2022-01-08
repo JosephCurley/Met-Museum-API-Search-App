@@ -3,6 +3,7 @@ import { hot } from 'react-hot-loader/root';
 import { DebounceInput } from 'react-debounce-input';
 import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
+import CollectionItem from './components/collection-item';
 import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
 
@@ -19,13 +20,14 @@ const App = () => {
 	const objectsGridRef = React.createRef();
 	const collectionsRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
-	const [collectionName, setCollectionName] = useState('');
-	const [collections, setCollections] = useState({});
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
+	const [newCollectionName, setNewCollectionName] = useState('');
+	const [collections, setCollections] = useState(
+		JSON.parse(localStorage.getItem('collections')) || {}
+	);
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
-
 	const [activeObject, setActiveObject] = useState(
 		Object.keys(savedObjects).length === 0 && defaultObject
 	);
@@ -136,7 +138,7 @@ const App = () => {
 		const newCollection = {
 			collectionObjects,
 		};
-		newCollections[collectionName] = newCollection;
+		newCollections[newCollectionName] = newCollection;
 		setCollections(newCollections);
 
 		// TODO do all of this in useEffect
@@ -144,6 +146,10 @@ const App = () => {
 			localStorage.setItem('collections', {});
 		}
 		localStorage.setItem('collections', JSON.stringify(collections));
+	};
+
+	const setActiveObjectsToCollection = collectionName => {
+		console.log(collections[collectionName].collectionObjects);
 	};
 
 	useEffect(() => {
@@ -237,20 +243,41 @@ const App = () => {
 				</div>
 				<div className="sidebar__section">
 					<div ref={collectionsRef}>
-						<input
-							className="collection-input"
-							key="collectionNameBar"
-							placeholder="Enter Bundle Name"
-							value={collectionName}
-							onChange={event => setCollectionName(event.target.value)}
-						/>
-						<button
-							type="button"
-							className="saved-objects__create-bundle"
-							onClick={() => createCollection()}
-							onKeyDown={e => e.key === 'Enter' && createCollection()}>
-							Save Bundle
-						</button>
+						<div className="collections__save-bar">
+							<input
+								className="collection-input"
+								key="newCollectionNameBar"
+								placeholder="Enter Bundle Name"
+								value={newCollectionName}
+								onChange={event => setNewCollectionName(event.target.value)}
+							/>
+							<button
+								type="button"
+								className="saved-objects__create-bundle"
+								onClick={() => createCollection()}
+								onKeyDown={e => e.key === 'Enter' && createCollection()}>
+								Save Bundle
+							</button>
+						</div>
+						<div>
+							<ul className="collection-items">
+								{Object.keys(collections).map(collection => {
+									return (
+										<CollectionItem
+											key={collection}
+											setActiveObjectsToCollection={
+												setActiveObjectsToCollection
+											}
+											collectionLength={
+												Object.keys(collections[collection].collectionObjects)
+													.length
+											}
+											collectionName={collection}
+										/>
+									);
+								})}
+							</ul>
+						</div>
 					</div>
 				</div>
 			</section>
