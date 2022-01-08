@@ -100,9 +100,14 @@ const App = () => {
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
 	const objectsGridRef = React.createRef();
+	const searchSectionRef = React.createRef();
 	useEffect(() => {}, []);
 
 	const fetchObjects = async objectID => {
+		searchSectionRef.current.scrollIntoView({
+			alignToTop: true,
+			behavior: 'smooth',
+		});
 		const request = await fetch(`${objectAPI}${objectID}`);
 		const response = await request.json();
 		const newObject = response;
@@ -163,7 +168,7 @@ const App = () => {
 	return (
 		<div className="object-search-app">
 			<section className="object-search__section">
-				<h1>The Met Object Look Up</h1>
+				<h1 ref={searchSectionRef}>The Met Object Look Up</h1>
 				<DebounceInput
 					className="object-search__input"
 					key="objectSearchBar"
