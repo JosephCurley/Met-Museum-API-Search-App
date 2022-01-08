@@ -42,7 +42,7 @@ h1 {
 }
 
 .object-search__section {
-	padding: 16px $spacing-component-margin;
+	padding: $spacing-xxs $spacing-component-margin $spacing-l;
 	position: sticky;
 	top: 0;
 	flex-grow: 1;
@@ -60,10 +60,9 @@ h1 {
 
 .saved-objects {
 	background-color: $color-white;
-	position: sticky;
-	top: 0;
 	flex-basis: auto;
 	box-shadow: $shadow-active;
+	z-index: 9;
 	@media (orientation: landscape) {
 		flex-shrink: 0;
 		flex-basis: 450px;
