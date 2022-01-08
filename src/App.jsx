@@ -100,10 +100,12 @@ const objectData = {
 const App = () => {
 	const objectsGridRef = React.createRef();
 	const searchSectionRef = React.createRef();
-	const [object, setObject] = useState(objectData);
 	const [sharableURL, setSharableURL] = useState();
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
+	);
+	const [object, setObject] = useState(
+		Object.keys(savedObjects).length === 0 && objectData
 	);
 
 	const setURL = () => {
@@ -210,6 +212,9 @@ const App = () => {
 			arrayOfSavedObjectsFromURL.forEach(objectID => {
 				fetchAndSave(objectID);
 			});
+		}
+		if (savedObjects) {
+			fetchObjects(Object.keys(savedObjects)[0]);
 		}
 	}, []);
 
