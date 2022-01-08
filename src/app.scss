@@ -95,6 +95,7 @@ h1 {
 }
 
 .saved-objects__grid {
+	background-color: $color-white;
 	padding: $spacing-xxs;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
