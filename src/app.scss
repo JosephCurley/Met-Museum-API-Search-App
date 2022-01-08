@@ -31,8 +31,6 @@ h1 {
 }
 
 .object-search-app {
-	grid-column-gap: 40px;
-	grid-row-gap: 40px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -111,4 +109,5 @@ h1 {
 .saved-objects__copy-link {
 	@include button-reset();
 	@include typography-link();
+	align-self: center;
 }

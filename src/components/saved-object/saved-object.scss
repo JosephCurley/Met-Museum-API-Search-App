@@ -14,6 +14,12 @@
 }
 
 .saved-object__name {
-	font-weight: 500;
-	line-height: 1.2;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	font-weight: 400;
+	font-size: $textsize-s;
+	line-height: 1.1;
+	height: 2.4em;
 }
