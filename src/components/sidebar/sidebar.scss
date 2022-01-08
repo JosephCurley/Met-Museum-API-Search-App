@@ -28,7 +28,7 @@ $sidebar-title-height: 60px;
 .sidebar__title {
 	align-items: center;
 	background-color: $color-white-opaque-90;
-	top: -1px;
+	top: 0;
 	display: flex;
 	flex-wrap: wrap;
 	grid-column-gap: $spacing-xxs;

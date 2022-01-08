@@ -19,7 +19,8 @@ const App = () => {
 	const objectsGridRef = React.createRef();
 	const collectionsRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
-	const [bundleName, setBundleName] = useState('');
+	const [collectionName, setCollectionName] = useState('');
+	const [collections, setCollections] = useState({});
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
@@ -128,22 +129,21 @@ const App = () => {
 		setSharableURLCurrent(true);
 	};
 
-	const createBundle = () => {
-		// Add Bundle to Array of Bundle Names
-		if (localStorage.getItem(`arrayOfBundleNames`) === null) {
-			localStorage.setItem(`arrayOfBundleNames`, []);
+	const createCollection = () => {
+		const newCollections = collections;
+
+		const collectionObjects = savedObjects;
+		const newCollection = {
+			collectionObjects,
+		};
+		newCollections[collectionName] = newCollection;
+		setCollections(newCollections);
+
+		// TODO do all of this in useEffect
+		if (localStorage.getItem('collections') === null) {
+			localStorage.setItem('collections', {});
 		}
-		let arrayOfBundleNames = [];
-		arrayOfBundleNames = localStorage.getItem('arrayOfBundleNames');
-
-		arrayOfBundleNames.push(`bundle-${bundleName}`);
-		localStorage.setItem(
-			'arrayOfBundleNames',
-			JSON.stringify(arrayOfBundleNames)
-		);
-
-		// Save Bundle as bundle-bundleName
-		localStorage.setItem(`bundle-${bundleName}`, JSON.stringify(savedObjects));
+		localStorage.setItem('collections', JSON.stringify(collections));
 	};
 
 	useEffect(() => {
@@ -238,17 +238,17 @@ const App = () => {
 				<div className="sidebar__section">
 					<div ref={collectionsRef}>
 						<input
-							className="bundle-input"
-							key="bundleNameBar"
+							className="collection-input"
+							key="collectionNameBar"
 							placeholder="Enter Bundle Name"
-							value={bundleName}
-							onChange={event => setBundleName(event.target.value)}
+							value={collectionName}
+							onChange={event => setCollectionName(event.target.value)}
 						/>
 						<button
 							type="button"
 							className="saved-objects__create-bundle"
-							onClick={() => createBundle()}
-							onKeyDown={e => e.key === 'Enter' && createBundle()}>
+							onClick={() => createCollection()}
+							onKeyDown={e => e.key === 'Enter' && createCollection()}>
 							Save Bundle
 						</button>
 					</div>
