@@ -17,7 +17,6 @@ const objectAPI =
 
 const App = () => {
 	const objectsGridRef = React.createRef();
-	const searchSectionRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [savedObjects, setSavedObjects] = useState(
@@ -63,7 +62,7 @@ const App = () => {
 	};
 
 	const handleNewActiveObject = async objectID => {
-		searchSectionRef.current.scrollIntoView({
+		document.querySelector('body').scrollIntoView({
 			alignToTop: true,
 			behavior: 'smooth',
 		});
@@ -151,7 +150,7 @@ const App = () => {
 	return (
 		<div className="object-search-app">
 			<section className="object-search__section">
-				<h1 ref={searchSectionRef}>The Met Object Look Up</h1>
+				<h1>The Met Object Look Up</h1>
 				<DebounceInput
 					className="object-search__input"
 					key="objectSearchBar"
@@ -167,27 +166,24 @@ const App = () => {
 			</section>
 			<section className="saved-objects">
 				<div className="saved-objects__title-bar">
-					<div>
-						<h1 className="saved-objects__header">Saved Objects</h1>
-						{sharableURL && (
-							<button
-								type="button"
-								className="saved-objects__copy-link"
-								onKeyDown={copyURLtoClipboard}
-								onClick={copyURLtoClipboard}>
-								{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
-							</button>
-						)}
-					</div>
-					{Object.keys(savedObjects).length > 10 && (
+					<h1 className="saved-objects__header">
 						<a
 							tabIndex="0"
 							className="saved-objects__top-link"
 							onClick={() => backToTop()}
 							onKeyDown={() => backToTop()}
 							role="button">
-							Back To Top
+							Saved Objects
 						</a>
+					</h1>
+					{sharableURL && (
+						<button
+							type="button"
+							className="saved-objects__copy-link"
+							onKeyDown={copyURLtoClipboard}
+							onClick={copyURLtoClipboard}>
+							{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
+						</button>
 					)}
 				</div>
 				<div className="saved-objects__grid" ref={objectsGridRef}>

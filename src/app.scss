@@ -43,7 +43,12 @@ h1 {
 
 .object-search__section {
 	padding: 16px $spacing-component-margin;
+	position: sticky;
+	top: 0;
 	flex-grow: 1;
+	@media (orientation: landscape) {
+		position: relative;
+	}
 }
 
 .object-search__input {
@@ -54,16 +59,16 @@ h1 {
 }
 
 .saved-objects {
+	background-color: $color-white;
 	position: sticky;
 	top: 0;
-	max-height: 100vh;
-	overflow: scroll;
 	flex-basis: auto;
 	box-shadow: $shadow-active;
 	@media (orientation: landscape) {
 		flex-shrink: 0;
 		flex-basis: 450px;
 		height: 100vh;
+		overflow: scroll;
 	}
 }
 
@@ -76,6 +81,7 @@ h1 {
 	backdrop-filter: blur(2px);
 	padding: $spacing-xxs $spacing-xxs $spacing-micro;
 	box-shadow: $shadow-passive;
+	z-index: 99;
 }
 
 .saved-objects__header {
@@ -95,6 +101,11 @@ h1 {
 	grid-template-columns: 1fr 1fr;
 	column-gap: 16px;
 	row-gap: $spacing-micro;
+	position: sticky;
+	top: 0;
+	@media (orientation: landscape) {
+		position: relative;
+	}
 }
 
 .saved-objects__copy-link {
