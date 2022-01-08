@@ -58,8 +58,11 @@ h1 {
 	top: 0;
 	height: 100vh;
 	overflow: scroll;
-	flex-basis: 450px;
+	flex-basis: 100vh;
 	box-shadow: $shadow-active;
+	@media (orientation: landscape) {
+		flex-basis: 450px;
+	}
 }
 
 .saved-objects__title-bar {
