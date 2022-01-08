@@ -3,6 +3,8 @@
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
 
+$bp-small-screen: 850px;
+
 * {
 	box-sizing: border-box;
 }
@@ -63,14 +65,22 @@ h1 {
 	z-index: 9;
 	@media (orientation: landscape) {
 		flex-shrink: 0;
-		flex-basis: 450px;
+		flex-basis: 300px;
 		height: 100vh;
 		overflow: scroll;
+		position: sticky;
+		top: 0;
+	}
+	@media (orientation: landscape) and (min-width: $bp-small-screen) {
+		flex-basis: 450px;
 	}
 }
 
 .saved-objects__title-bar {
 	display: flex;
+	flex-wrap: wrap;
+	grid-column-gap: $spacing-xxs;
+	grid-row-gap: $spacing-xxs;
 	justify-content: space-between;
 	position: sticky;
 	top: -1px;
@@ -101,9 +111,6 @@ h1 {
 	row-gap: $spacing-micro;
 	position: sticky;
 	top: 0;
-	@media (orientation: landscape) {
-		position: relative;
-	}
 }
 
 .saved-objects__copy-link {
