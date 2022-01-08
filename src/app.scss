@@ -46,8 +46,12 @@ h1 {
 	position: sticky;
 	top: 0;
 	flex-grow: 1;
+	height: 100%;
+	overflow: scroll;
 	@media (orientation: landscape) {
 		position: relative;
+		height: auto;
+		overflow: auto;
 	}
 }
 
