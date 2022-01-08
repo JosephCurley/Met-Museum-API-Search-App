@@ -15,7 +15,7 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 				{savedObjects[object.objectID] ? (
 					<button
 						onClick={updateLocalStorage}
-						onKeyDown={updateLocalStorage}
+						onKeyDown={e => e.key === 'Enter' && updateLocalStorage}
 						className="active-object__button active-object__button--remove"
 						type="submit">
 						Remove
@@ -23,7 +23,7 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 				) : (
 					<button
 						onClick={updateLocalStorage}
-						onKeyDown={updateLocalStorage}
+						onKeyDown={e => e.key === 'Enter' && updateLocalStorage}
 						className="active-object__button active-object__button--save"
 						type="submit">
 						Save 🤍

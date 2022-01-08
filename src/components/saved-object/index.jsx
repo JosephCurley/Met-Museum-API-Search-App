@@ -12,7 +12,7 @@ const SavedObject = ({
 		role="button"
 		tabIndex={0}
 		onClick={() => handleNewActiveObject(objectNumber)}
-		onKeyDown={() => handleNewActiveObject(objectNumber)}>
+		onKeyDown={e => e.key === 'Enter' && handleNewActiveObject(objectNumber)}>
 		{primaryImageSmall && (
 			<img
 				src={primaryImageSmall}

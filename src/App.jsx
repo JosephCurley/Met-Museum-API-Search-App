@@ -135,8 +135,8 @@ const App = () => {
 			arrayOfSavedObjectsFromURL.forEach(objectID => {
 				fetchAndSave(objectID);
 			});
-		}
-		if (Object.keys(savedObjects).length > 0) {
+			handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
+		} else if (Object.keys(savedObjects).length > 0) {
 			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
 		window.history.replaceState({}, '', `${url.origin}`);
@@ -171,7 +171,7 @@ const App = () => {
 							tabIndex="0"
 							className="saved-objects__top-link"
 							onClick={() => backToTop()}
-							onKeyDown={() => backToTop()}
+							onKeyDown={e => e.key === 'Enter' && backToTop()}
 							role="button">
 							Saved Objects
 						</a>
@@ -180,7 +180,7 @@ const App = () => {
 						<button
 							type="button"
 							className="saved-objects__copy-link"
-							onKeyDown={copyURLtoClipboard}
+							onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
 							onClick={copyURLtoClipboard}>
 							{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
 						</button>
