@@ -213,9 +213,10 @@ const App = () => {
 				fetchAndSave(objectID);
 			});
 		}
-		if (savedObjects) {
+		if (Object.keys(savedObjects).length > 0) {
 			fetchObjects(Object.keys(savedObjects)[0]);
 		}
+		window.history.replaceState({}, '', `${url.origin}`);
 	}, []);
 
 	useEffect(() => {
