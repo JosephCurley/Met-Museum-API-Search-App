@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
+import { DebounceInput } from 'react-debounce-input';
 import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import './app.scss';
@@ -108,11 +109,12 @@ const App = () => {
 		setObject(newObject);
 	};
 
-	const searchObjects = async searchQuery => {
+	const searchObjects = async query => {
+		const searchQuery = query;
 		const request = await fetch(`${searchAPI}${searchQuery}`);
 		const response = await request.json();
-		const newObject = response.objectIDs[0];
-		if (newObject) {
+		if (response.objectIDs) {
+			const newObject = response.objectIDs[0];
 			fetchObjects(newObject);
 		}
 	};
@@ -161,11 +163,12 @@ const App = () => {
 		<div className="object-search-app">
 			<section className="object-search__section">
 				<h1>The Met Object Look Up</h1>
-				<input
+				<DebounceInput
 					className="object-search__input"
 					key="objectSearchBar"
 					placeholder="Search Objects"
-					onChange={e => searchObjects(e.target.value)}
+					debounceTimeout={500}
+					onChange={event => searchObjects(event.target.value)}
 				/>
 				<ActiveObject
 					savedObjects={savedObjects}
