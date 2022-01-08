@@ -5,14 +5,14 @@ const SavedObject = ({
 	objectNumber,
 	objectTitle,
 	primaryImageSmall,
-	fetchObjects,
+	handleNewActiveObject,
 }) => (
 	<div
 		className="saved-object"
 		role="button"
 		tabIndex={0}
-		onClick={() => fetchObjects(objectNumber)}
-		onKeyDown={() => fetchObjects(objectNumber)}>
+		onClick={() => handleNewActiveObject(objectNumber)}
+		onKeyDown={() => handleNewActiveObject(objectNumber)}>
 		{primaryImageSmall && (
 			<img
 				src={primaryImageSmall}
@@ -31,7 +31,7 @@ SavedObject.propTypes = {
 	objectNumber: PropTypes.number,
 	objectTitle: PropTypes.string,
 	primaryImageSmall: PropTypes.string,
-	fetchObjects: PropTypes.func,
+	handleNewActiveObject: PropTypes.func,
 };
 
 export default SavedObject;

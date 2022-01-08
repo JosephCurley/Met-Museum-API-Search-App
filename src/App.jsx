@@ -3,6 +3,7 @@ import { hot } from 'react-hot-loader/root';
 import { DebounceInput } from 'react-debounce-input';
 import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
+import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
 
 const url = new URL(`${window.location}`);
@@ -14,89 +15,6 @@ const searchAPI =
 const objectAPI =
 	'https://collectionapi.metmuseum.org/public/collection/v1/objects/';
 
-const objectData = {
-	objectID: 37299,
-	isHighlight: false,
-	accessionNumber: 'JP1059',
-	accessionYear: '1915',
-	isPublicDomain: true,
-	primaryImage:
-		'https://images.metmuseum.org/CRDImages/as/original/DP135567.jpg',
-	primaryImageSmall:
-		'https://images.metmuseum.org/CRDImages/as/web-large/DP135567.jpg',
-	additionalImages: [],
-	constituents: [
-		{
-			constituentID: 11410,
-			role: 'Artist',
-			name: 'Kitagawa Utamaro',
-			constituentULAN_URL: 'http://vocab.getty.edu/page/ulan/500054492',
-			constituentWikidata_URL: 'https://www.wikidata.org/wiki/Q272045',
-			gender: '',
-		},
-	],
-	department: 'Asian Art',
-	objectName: 'Print',
-	title: 'Shells under Water',
-	culture: 'Japan',
-	period: 'Edo period (1615–1868)',
-	dynasty: '',
-	reign: '',
-	portfolio: '',
-	artistRole: 'Artist',
-	artistPrefix: '',
-	artistDisplayName: 'Kitagawa Utamaro',
-	artistDisplayBio: 'Japanese, ca. 1754–1806',
-	artistSuffix: '',
-	artistAlphaSort: 'Kitagawa Utamaro',
-	artistNationality: 'Japanese',
-	artistBeginDate: '1754',
-	artistEndDate: '1806',
-	artistGender: '',
-	artistWikidata_URL: 'https://www.wikidata.org/wiki/Q272045',
-	artistULAN_URL: 'http://vocab.getty.edu/page/ulan/500054492',
-	objectDate: '1790',
-	objectBeginDate: 1790,
-	objectEndDate: 1790,
-	medium: 'Woodblock print; ink and color on paper',
-	dimensions: '9 1/8 x 14 7/8 in. (23.2 x 37.8 cm)',
-	measurements: [
-		{
-			elementName: 'Overall',
-			elementDescription: null,
-			elementMeasurements: { Height: 23.2, Width: 37.8 },
-		},
-	],
-	creditLine: 'Gift of Estate of Samuel Isham, 1915',
-	geographyType: '',
-	city: '',
-	state: '',
-	county: '',
-	country: '',
-	region: '',
-	subregion: '',
-	locale: '',
-	locus: '',
-	excavation: '',
-	river: '',
-	classification: 'Prints',
-	rightsAndReproduction: '',
-	linkResource: '',
-	metadataDate: '2020-09-16T18:35:19.457Z',
-	repository: 'Metropolitan Museum of Art, New York, NY',
-	objectURL: 'https://www.metmuseum.org/art/collection/search/37299',
-	tags: [
-		{
-			term: 'Shells',
-			AAT_URL: 'http://vocab.getty.edu/page/aat/300011829',
-			Wikidata_URL: 'https://www.wikidata.org/wiki/Q213096',
-		},
-	],
-	objectWikidata_URL: '',
-	isTimelineWork: false,
-	GalleryNumber: '',
-};
-
 const App = () => {
 	const objectsGridRef = React.createRef();
 	const searchSectionRef = React.createRef();
@@ -104,8 +22,9 @@ const App = () => {
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
-	const [object, setObject] = useState(
-		Object.keys(savedObjects).length === 0 && objectData
+
+	const [activeObject, setActiveObject] = useState(
+		Object.keys(savedObjects).length === 0 && defaultObject
 	);
 
 	const setURL = () => {
@@ -120,15 +39,20 @@ const App = () => {
 		}
 	};
 
+	const fetchObjects = async objectID => {
+		const request = await fetch(`${objectAPI}${objectID}`);
+		const response = request.json();
+		return response;
+		// TODO Error handling
+	};
+
 	const fetchAndSave = async objectID => {
 		localStorage.setItem('savedObjects', JSON.stringify({}));
-		const request = await fetch(`${objectAPI}${objectID}`);
-		const response = await request.json();
-		const newObject = response;
-		const newObjectReduced = {
-			title: newObject.title,
-			primaryImageSmall: newObject.primaryImageSmall,
-		};
+		const newObject = await fetchObjects(objectID);
+		const newObjectReduced = (({ title, primaryImageSmall }) => ({
+			title,
+			primaryImageSmall,
+		}))(newObject);
 		const objectOfSavedObjects = JSON.parse(
 			localStorage.getItem('savedObjects') || {}
 		);
@@ -137,15 +61,13 @@ const App = () => {
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
 	};
 
-	const fetchObjects = async objectID => {
+	const handleNewActiveObject = async objectID => {
 		searchSectionRef.current.scrollIntoView({
 			alignToTop: true,
 			behavior: 'smooth',
 		});
-		const request = await fetch(`${objectAPI}${objectID}`);
-		const response = await request.json();
-		const newObject = response;
-		setObject(newObject);
+		const newActiveObject = await fetchObjects(objectID);
+		setActiveObject(newActiveObject);
 	};
 
 	const searchObjects = async query => {
@@ -154,19 +76,19 @@ const App = () => {
 		const response = await request.json();
 		if (response.objectIDs) {
 			const newObject = response.objectIDs[0];
-			fetchObjects(newObject);
+			handleNewActiveObject(newObject);
 		}
 	};
 
 	const addItemToStorage = () => {
 		const newObject = {
-			title: object.title,
-			primaryImageSmall: object.primaryImageSmall,
+			title: activeObject.title,
+			primaryImageSmall: activeObject.primaryImageSmall,
 		};
 
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
-		objectOfSavedObjects[object.objectID] = newObject;
+		objectOfSavedObjects[activeObject.objectID] = newObject;
 		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
 
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
@@ -175,7 +97,7 @@ const App = () => {
 	const removeItemFromStorage = () => {
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
-		delete objectOfSavedObjects[object.objectID];
+		delete objectOfSavedObjects[activeObject.objectID];
 		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
 	};
@@ -186,7 +108,7 @@ const App = () => {
 			localStorage.setItem('session', JSON.stringify({}));
 		}
 
-		if (savedObjects[object.objectID]) {
+		if (savedObjects[activeObject.objectID]) {
 			removeItemFromStorage();
 		} else {
 			addItemToStorage();
@@ -214,7 +136,7 @@ const App = () => {
 			});
 		}
 		if (Object.keys(savedObjects).length > 0) {
-			fetchObjects(Object.keys(savedObjects)[0]);
+			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
 		window.history.replaceState({}, '', `${url.origin}`);
 	}, []);
@@ -236,7 +158,7 @@ const App = () => {
 				/>
 				<ActiveObject
 					savedObjects={savedObjects}
-					object={object}
+					object={activeObject}
 					updateLocalStorage={updateLocalStorage}
 				/>
 			</section>
@@ -272,7 +194,7 @@ const App = () => {
 							<SavedObject
 								key={savedObject}
 								objectNumber={savedObject}
-								fetchObjects={fetchObjects}
+								handleNewActiveObject={handleNewActiveObject}
 								objectTitle={savedObjects[savedObject].title}
 								primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
 							/>
