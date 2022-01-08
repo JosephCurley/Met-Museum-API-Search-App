@@ -5,6 +5,9 @@ import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import './app.scss';
 
+const url = new URL(`${window.location}`);
+const params = new URLSearchParams(url.search.slice(1));
+
 const searchAPI =
 	'https://collectionapi.metmuseum.org/public/collection/v1/search?q=';
 
@@ -95,13 +98,42 @@ const objectData = {
 };
 
 const App = () => {
+	const objectsGridRef = React.createRef();
+	const searchSectionRef = React.createRef();
 	const [object, setObject] = useState(objectData);
+	const [sharableURL, setSharableURL] = useState();
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
-	const objectsGridRef = React.createRef();
-	const searchSectionRef = React.createRef();
-	useEffect(() => {}, []);
+
+	const setURL = () => {
+		if (Object.keys(savedObjects).length > 0) {
+			const savedObjectsParam = encodeURIComponent(
+				JSON.stringify(Object.keys(savedObjects))
+			);
+			params.set('o', savedObjectsParam);
+			setSharableURL(`${url.origin}?${params}`);
+		} else {
+			setSharableURL(null);
+		}
+	};
+
+	const fetchAndSave = async objectID => {
+		localStorage.setItem('savedObjects', JSON.stringify({}));
+		const request = await fetch(`${objectAPI}${objectID}`);
+		const response = await request.json();
+		const newObject = response;
+		const newObjectReduced = {
+			title: newObject.title,
+			primaryImageSmall: newObject.primaryImageSmall,
+		};
+		const objectOfSavedObjects = JSON.parse(
+			localStorage.getItem('savedObjects') || {}
+		);
+		objectOfSavedObjects[newObject.objectID] = newObjectReduced;
+		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
+		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+	};
 
 	const fetchObjects = async objectID => {
 		searchSectionRef.current.scrollIntoView({
@@ -165,6 +197,26 @@ const App = () => {
 		});
 	};
 
+	const copyURLtoClipboard = () => {
+		navigator.clipboard.writeText(sharableURL);
+	};
+
+	useEffect(() => {
+		const objectsFromURL = params.get('o');
+		if (objectsFromURL) {
+			const arrayOfSavedObjectsFromURL = JSON.parse(
+				decodeURIComponent(objectsFromURL)
+			);
+			arrayOfSavedObjectsFromURL.forEach(objectID => {
+				fetchAndSave(objectID);
+			});
+		}
+	}, []);
+
+	useEffect(() => {
+		setURL();
+	}, [savedObjects]);
+
 	return (
 		<div className="object-search-app">
 			<section className="object-search__section">
@@ -184,7 +236,19 @@ const App = () => {
 			</section>
 			<section className="saved-objects">
 				<div className="saved-objects__title-bar">
-					<h1 className="saved-objects__header">Saved Objects</h1>
+					<div>
+						<h1 className="saved-objects__header">Saved Objects</h1>
+						{sharableURL && (
+							<a
+								tabIndex="0"
+								className="saved-objects__top-link"
+								onKeyDown={copyURLtoClipboard}
+								onClick={copyURLtoClipboard}
+								role="button">
+								Copy Sharable URL
+							</a>
+						)}
+					</div>
 					{Object.keys(savedObjects).length > 10 && (
 						<a
 							tabIndex="0"
