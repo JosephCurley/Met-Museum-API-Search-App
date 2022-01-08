@@ -142,6 +142,7 @@ const App = () => {
 	};
 
 	const updateLocalStorage = () => {
+		document.activeElement.blur();
 		if (!localStorage.getItem('savedObjects')) {
 			localStorage.setItem('session', JSON.stringify({}));
 		}
