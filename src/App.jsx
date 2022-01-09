@@ -106,6 +106,11 @@ const App = () => {
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
 	};
 
+	const clearSavedObjects = () => {
+		localStorage.setItem('savedObjects', JSON.stringify({}));
+		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+	};
+
 	const updateLocalStorage = () => {
 		document.activeElement.blur();
 		if (!localStorage.getItem('savedObjects')) {
@@ -165,7 +170,9 @@ const App = () => {
 		localStorage.setItem('savedObjects', JSON.stringify(newSavedObjects));
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
 
-		handleNewActiveObject(Object.keys(savedObjects)[0]);
+		if (Object.keys(newSavedObjects)[0]) {
+			handleNewActiveObject(Object.keys(newSavedObjects)[0]);
+		}
 	};
 
 	const handleDataFromURL = objectsFromURL => {
@@ -225,13 +232,13 @@ const App = () => {
 							Saved Objects
 						</a>
 					</h1>
-					{sharableURL && (
+					{Object.keys(savedObjects).length !== 0 && (
 						<button
 							type="button"
 							className="saved-objects__copy-link"
-							onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
-							onClick={copyURLtoClipboard}>
-							{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
+							onKeyDown={e => e.key === 'Enter' && clearSavedObjects}
+							onClick={clearSavedObjects}>
+							Clear Objects
 						</button>
 					)}
 				</div>
@@ -263,6 +270,15 @@ const App = () => {
 							Collections
 						</a>
 					</h1>
+					{sharableURL && (
+						<button
+							type="button"
+							className="saved-objects__copy-link"
+							onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
+							onClick={copyURLtoClipboard}>
+							{sharableURLCurrent ? 'Copied!' : 'Copy Collection Link'}
+						</button>
+					)}
 				</div>
 				<div className="sidebar__section">
 					<div ref={collectionsRef}>
