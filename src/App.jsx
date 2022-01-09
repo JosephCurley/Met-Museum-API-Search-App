@@ -95,7 +95,6 @@ const App = () => {
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
 		objectOfSavedObjects[activeObject.objectID] = newObject;
 		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-
 		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
 	};
 
@@ -131,37 +130,61 @@ const App = () => {
 		setSharableURLCurrent(true);
 	};
 
-	const createCollection = () => {
+	const createCollection = (
+		newName = newCollectionName,
+		objects = savedObjects
+	) => {
 		const newCollections = collections;
 
-		const collectionObjects = savedObjects;
+		const collectionObjects = objects;
 		const newCollection = {
 			collectionObjects,
 		};
-		newCollections[newCollectionName] = newCollection;
-		setCollections(newCollections);
-
+		newCollections[newName] = newCollection;
 		// TODO do all of this in useEffect
 		if (localStorage.getItem('collections') === null) {
 			localStorage.setItem('collections', {});
 		}
 		localStorage.setItem('collections', JSON.stringify(collections));
+		setCollections(JSON.parse(localStorage.getItem('collections')));
+	};
+
+	const removeCollection = collectionName => {
+		const tempCollectionRef =
+			JSON.parse(localStorage.getItem('collections')) || {};
+		delete tempCollectionRef[collectionName];
+		localStorage.setItem('collections', JSON.stringify(tempCollectionRef));
+		setCollections(JSON.parse(localStorage.getItem('collections')));
 	};
 
 	const setActiveObjectsToCollection = collectionName => {
-		console.log(collections[collectionName].collectionObjects);
+		if (localStorage.getItem('savedObjects') === null) {
+			localStorage.setItem('savedObjects', {});
+		}
+		const newSavedObjects = collections[collectionName].collectionObjects;
+		localStorage.setItem('savedObjects', JSON.stringify(newSavedObjects));
+		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+
+		handleNewActiveObject(Object.keys(savedObjects)[0]);
+	};
+
+	const handleDataFromURL = objectsFromURL => {
+		if (savedObjects) {
+			createCollection('Unsaved Collection');
+		}
+		const arrayOfSavedObjectsFromURL = JSON.parse(
+			decodeURIComponent(objectsFromURL)
+		);
+		arrayOfSavedObjectsFromURL.forEach(objectID => {
+			fetchAndSave(objectID);
+		});
+		handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
 	};
 
 	useEffect(() => {
 		const objectsFromURL = params.get('o');
 		if (objectsFromURL) {
-			const arrayOfSavedObjectsFromURL = JSON.parse(
-				decodeURIComponent(objectsFromURL)
-			);
-			arrayOfSavedObjectsFromURL.forEach(objectID => {
-				fetchAndSave(objectID);
-			});
-			handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
+			handleDataFromURL(objectsFromURL);
 		} else if (Object.keys(savedObjects).length > 0) {
 			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
@@ -247,16 +270,17 @@ const App = () => {
 							<input
 								className="collection-input"
 								key="newCollectionNameBar"
-								placeholder="Enter Bundle Name"
+								placeholder="Collection Name"
 								value={newCollectionName}
+								onKeyDown={e => e.key === 'Enter' && createCollection()}
 								onChange={event => setNewCollectionName(event.target.value)}
 							/>
 							<button
 								type="button"
-								className="saved-objects__create-bundle"
+								className="collection__save-button"
 								onClick={() => createCollection()}
 								onKeyDown={e => e.key === 'Enter' && createCollection()}>
-								Save Bundle
+								Save Collection
 							</button>
 						</div>
 						<div>
@@ -265,6 +289,7 @@ const App = () => {
 									return (
 										<CollectionItem
 											key={collection}
+											removeCollection={removeCollection}
 											setActiveObjectsToCollection={
 												setActiveObjectsToCollection
 											}

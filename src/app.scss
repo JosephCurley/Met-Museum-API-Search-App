@@ -83,6 +83,31 @@ h1 {
 	align-self: center;
 }
 
+.collections__save-bar {
+	display: flex;
+	grid-column-gap: $spacing-micro;
+	grid-row-gap: $spacing-micro;
+}
+
+.collection__save-button {
+	@include primary-button();
+	@include primary-button--ghost-dark();
+	flex-shrink: 0;
+	height: 40px;
+	line-height: 0;
+	min-width: 100px;
+	white-space: nowrap;
+}
+
+.collection-input {
+	flex-shrink: 1;
+	flex-grow: 1;
+	min-width: 0;
+	padding: $spacing-micro;
+	border-radius: 20px;
+	margin-bottom: $spacing-xxs;
+}
+
 .collection-items {
 	list-style: none;
 	padding-left: 0;

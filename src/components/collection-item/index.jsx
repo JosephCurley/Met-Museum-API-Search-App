@@ -5,6 +5,7 @@ const CollectionItem = ({
 	collectionName,
 	collectionLength,
 	setActiveObjectsToCollection,
+	removeCollection,
 }) => (
 	<li className="collection-item">
 		<button
@@ -19,10 +20,18 @@ const CollectionItem = ({
 				({collectionLength} objects)
 			</span>
 		</button>
+		<button
+			type="button"
+			className="collection-item__button-remove"
+			onClick={() => removeCollection(collectionName)}
+			onKeyDown={e => e.key === 'Enter' && removeCollection(collectionName)}>
+			✖️
+		</button>
 	</li>
 );
 
 CollectionItem.propTypes = {
+	removeCollection: PropTypes.func,
 	setActiveObjectsToCollection: PropTypes.func,
 	collectionLength: PropTypes.number,
 	collectionName: PropTypes.string,
