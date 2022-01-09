@@ -19,6 +19,7 @@ const objectAPI =
 const App = () => {
 	const objectsGridRef = React.createRef();
 	const collectionsRef = React.createRef();
+	const objectSearchRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [newCollectionName, setNewCollectionName] = useState('');
@@ -202,21 +203,32 @@ const App = () => {
 
 	return (
 		<div className="object-search-app">
-			<section className="object-search__section">
-				<h1>The Met Object Look Up</h1>
-				<DebounceInput
-					className="object-search__input"
-					key="objectSearchBar"
-					placeholder="Search Objects"
-					debounceTimeout={500}
-					onChange={event => searchObjects(event.target.value)}
-				/>
-				<ActiveObject
-					savedObjects={savedObjects}
-					object={activeObject}
-					handleSavedObjectChange={handleSavedObjectChange}
-				/>
-			</section>
+			<main className="main__section" ref={objectSearchRef}>
+				<div className="main__title-bar">
+					<a
+						tabIndex="0"
+						className="main__title-link"
+						onClick={() => scrollToRef(objectSearchRef)}
+						onKeyDown={e => e.key === 'Enter' && scrollToRef(objectSearchRef)}
+						role="button">
+						<h1 className="main-title">Object Look Up</h1>
+					</a>
+				</div>
+				<div className="object-search__section">
+					<DebounceInput
+						className="object-search__input"
+						key="objectSearchBar"
+						placeholder="Search Objects"
+						debounceTimeout={500}
+						onChange={event => searchObjects(event.target.value)}
+					/>
+					<ActiveObject
+						savedObjects={savedObjects}
+						object={activeObject}
+						handleSavedObjectChange={handleSavedObjectChange}
+					/>
+				</div>
+			</main>
 			<section className="sidebar">
 				<div className="sidebar__title">
 					<h1 className="saved-objects__header">

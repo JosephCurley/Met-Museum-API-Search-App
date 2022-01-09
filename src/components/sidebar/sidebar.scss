@@ -1,4 +1,3 @@
-$sidebar-title-height: 60px;
 
 .sidebar {
 	background-color: $color-white;
@@ -22,13 +21,16 @@ $sidebar-title-height: 60px;
 	height: calc(100vh - 2*#{$sidebar-title-height});
 	overflow: scroll;
 	background-color: $color-white;
-	padding: $spacing-xxs;
+	padding: $spacing-xxs $spacing-component-margin;
+	@media (orientation: landscape)  {
+		padding: $spacing-xxs;
+	}
 }
 
 .sidebar__title {
 	align-items: center;
 	background-color: $color-white-opaque-90;
-	top: 0;
+	top: $sidebar-title-height;
 	display: flex;
 	flex-wrap: wrap;
 	grid-column-gap: $spacing-xxs;
@@ -36,13 +38,19 @@ $sidebar-title-height: 60px;
 	justify-content: space-between;
 	position: sticky;
 	backdrop-filter: blur(2px);
-	padding: 0 $spacing-xxs 0;
+	padding: 0 $spacing-component-margin;
 	box-shadow: $shadow-passive;
 	min-height: $sidebar-title-height;
 	z-index: 99;
-
+	@media (orientation: landscape) {
+		padding: 0 $spacing-xxs;
+		top: 0;
+	}
 	&.sidebar__title--collections {
-		top: $sidebar-title-height;
+		top: 2*$sidebar-title-height;
+		@media (orientation: landscape) {
+			top: $sidebar-title-height;
+		}
 	}
 }
 
