@@ -23,6 +23,7 @@
 	background-color: $color-white;
 	padding: $spacing-xxs $spacing-component-margin;
 	@media (orientation: landscape)  {
+		height: calc(100vh - 2*#{$sidebar-title-height});
 		padding: $spacing-xxs;
 	}
 }
