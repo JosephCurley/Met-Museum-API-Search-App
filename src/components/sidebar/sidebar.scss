@@ -18,7 +18,7 @@
 }
 
 .sidebar__section {
-	height: calc(100vh - 2*#{$sidebar-title-height});
+	height: calc(100vh - 3*#{$sidebar-title-height});
 	overflow: scroll;
 	background-color: $color-white;
 	padding: $spacing-xxs $spacing-component-margin;
