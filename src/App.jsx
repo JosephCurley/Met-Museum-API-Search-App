@@ -176,7 +176,7 @@ const App = () => {
 	};
 
 	const handleDataFromURL = objectsFromURL => {
-		if (savedObjects) {
+		if (Object.keys(savedObjects).length !== 0) {
 			createCollection('Unsaved Collection');
 		}
 		const arrayOfSavedObjectsFromURL = JSON.parse(
