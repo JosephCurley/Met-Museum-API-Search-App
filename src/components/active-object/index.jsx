@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
+const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 	<div className="active-object">
 		<div>
 			<div className="active-object__title-box">
@@ -14,16 +14,16 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 				</div>
 				{savedObjects[object.objectID] ? (
 					<button
-						onClick={updateLocalStorage}
-						onKeyDown={e => e.key === 'Enter' && updateLocalStorage}
+						onClick={handleSavedObjectChange}
+						onKeyDown={e => e.key === 'Enter' && handleSavedObjectChange}
 						className="active-object__button active-object__button--remove"
 						type="submit">
 						Remove
 					</button>
 				) : (
 					<button
-						onClick={updateLocalStorage}
-						onKeyDown={e => e.key === 'Enter' && updateLocalStorage}
+						onClick={handleSavedObjectChange}
+						onKeyDown={e => e.key === 'Enter' && handleSavedObjectChange}
 						className="active-object__button active-object__button--save"
 						type="submit">
 						Save 🤍
@@ -80,7 +80,7 @@ const ActiveObject = ({ object, updateLocalStorage, savedObjects }) => (
 ActiveObject.propTypes = {
 	savedObjects: PropTypes.object,
 	object: PropTypes.object,
-	updateLocalStorage: PropTypes.func,
+	handleSavedObjectChange: PropTypes.func,
 };
 
 export default ActiveObject;

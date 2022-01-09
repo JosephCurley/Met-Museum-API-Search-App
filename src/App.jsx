@@ -52,18 +52,16 @@ const App = () => {
 	};
 
 	const fetchAndSave = async objectID => {
-		localStorage.setItem('savedObjects', JSON.stringify({}));
 		const newObject = await fetchObjects(objectID);
 		const newObjectReduced = (({ title, primaryImageSmall }) => ({
 			title,
 			primaryImageSmall,
 		}))(newObject);
-		const objectOfSavedObjects = JSON.parse(
-			localStorage.getItem('savedObjects') || {}
-		);
-		objectOfSavedObjects[newObject.objectID] = newObjectReduced;
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+
+		const storedSavedObjects = JSON.parse(localStorage.getItem('savedObjects'));
+
+		storedSavedObjects[newObject.objectID] = newObjectReduced;
+		setSavedObjects(storedSavedObjects);
 	};
 
 	const handleNewActiveObject = async objectID => {
@@ -85,7 +83,7 @@ const App = () => {
 		}
 	};
 
-	const addItemToStorage = () => {
+	const handleSaveObject = () => {
 		const newObject = {
 			title: activeObject.title,
 			primaryImageSmall: activeObject.primaryImageSmall,
@@ -94,33 +92,27 @@ const App = () => {
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
 		objectOfSavedObjects[activeObject.objectID] = newObject;
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects(objectOfSavedObjects);
 	};
 
-	const removeItemFromStorage = () => {
+	const handleRemoveObject = () => {
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
 		delete objectOfSavedObjects[activeObject.objectID];
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects(objectOfSavedObjects);
 	};
 
 	const clearSavedObjects = () => {
-		localStorage.setItem('savedObjects', JSON.stringify({}));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects({});
 	};
 
-	const updateLocalStorage = () => {
+	const handleSavedObjectChange = () => {
 		document.activeElement.blur();
-		if (!localStorage.getItem('savedObjects')) {
-			localStorage.setItem('savedObjects', JSON.stringify({}));
-		}
 
 		if (savedObjects[activeObject.objectID]) {
-			removeItemFromStorage();
+			handleRemoveObject();
 		} else {
-			addItemToStorage();
+			handleSaveObject();
 		}
 	};
 
@@ -139,36 +131,25 @@ const App = () => {
 		newName = newCollectionName,
 		objects = savedObjects
 	) => {
-		const newCollections = collections;
-
+		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
 		const collectionObjects = objects;
 		const newCollection = {
 			collectionObjects,
 		};
-		newCollections[newName] = newCollection;
-		// TODO do all of this in useEffect
-		if (localStorage.getItem('collections') === null) {
-			localStorage.setItem('collections', {});
-		}
-		localStorage.setItem('collections', JSON.stringify(collections));
-		setCollections(JSON.parse(localStorage.getItem('collections')));
+
+		tempCollectionRef[newName] = newCollection;
+		setCollections(tempCollectionRef);
 	};
 
 	const removeCollection = collectionName => {
-		const tempCollectionRef =
-			JSON.parse(localStorage.getItem('collections')) || {};
+		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
 		delete tempCollectionRef[collectionName];
-		localStorage.setItem('collections', JSON.stringify(tempCollectionRef));
-		setCollections(JSON.parse(localStorage.getItem('collections')));
+		setCollections(tempCollectionRef);
 	};
 
 	const setActiveObjectsToCollection = collectionName => {
-		if (localStorage.getItem('savedObjects') === null) {
-			localStorage.setItem('savedObjects', {});
-		}
 		const newSavedObjects = collections[collectionName].collectionObjects;
-		localStorage.setItem('savedObjects', JSON.stringify(newSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects(newSavedObjects);
 
 		if (Object.keys(newSavedObjects)[0]) {
 			handleNewActiveObject(Object.keys(newSavedObjects)[0]);
@@ -178,6 +159,7 @@ const App = () => {
 	const handleDataFromURL = objectsFromURL => {
 		if (Object.keys(savedObjects).length !== 0) {
 			createCollection('Unsaved Collection');
+			clearSavedObjects();
 		}
 		const arrayOfSavedObjectsFromURL = JSON.parse(
 			decodeURIComponent(objectsFromURL)
@@ -189,19 +171,34 @@ const App = () => {
 	};
 
 	useEffect(() => {
+		// If savedObjects doesn't exist in localStorage, create it.
+		if (localStorage.getItem('savedObjects') === null) {
+			localStorage.setItem('savedObjects', {});
+		}
+		// Also Set Collections
+		if (localStorage.getItem('collections') === null) {
+			localStorage.setItem('collections', {});
+		}
+		// If there are obects in the URL, set SavedObjects to match.
 		const objectsFromURL = params.get('o');
 		if (objectsFromURL) {
 			handleDataFromURL(objectsFromURL);
+			window.history.replaceState({}, '', `${url.origin}`);
 		} else if (Object.keys(savedObjects).length > 0) {
+			// Set Initial Object to one from the user's saved objects.
 			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
-		window.history.replaceState({}, '', `${url.origin}`);
 	}, []);
 
 	useEffect(() => {
+		localStorage.setItem('savedObjects', JSON.stringify(savedObjects));
 		setURL();
 		setSharableURLCurrent(false);
 	}, [savedObjects]);
+
+	useEffect(() => {
+		localStorage.setItem('collections', JSON.stringify(collections));
+	}, [collections]);
 
 	return (
 		<div className="object-search-app">
@@ -217,7 +214,7 @@ const App = () => {
 				<ActiveObject
 					savedObjects={savedObjects}
 					object={activeObject}
-					updateLocalStorage={updateLocalStorage}
+					handleSavedObjectChange={handleSavedObjectChange}
 				/>
 			</section>
 			<section className="sidebar">
