@@ -11,7 +11,6 @@ const ImageInput = ({ searchObjects }) => {
 	};
 
 	const readImage = file => {
-		alert(file.type);
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
