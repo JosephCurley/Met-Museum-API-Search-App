@@ -30,7 +30,6 @@ const ImageInput = ({ searchObjects }) => {
 				if (!success) {
 					setImageInputText('Error Reading Image');
 				} else {
-					console.log('lol');
 					setImageInputText('Scan Accession #');
 				}
 			})();
