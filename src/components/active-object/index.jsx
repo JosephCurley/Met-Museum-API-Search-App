@@ -17,7 +17,7 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 						<button
 							onClick={handleSavedObjectChange}
 							onKeyDown={e => e.key === 'Enter' && handleSavedObjectChange}
-							className="active-object__button active-object__button--remove button button--secondary"
+							className="active-object__button active-object__button--remove button button--ghost"
 							type="submit">
 							Remove
 						</button>

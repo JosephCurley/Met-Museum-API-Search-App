@@ -4,6 +4,7 @@ import { DebounceInput } from 'react-debounce-input';
 import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import CollectionItem from './components/collection-item';
+import ImageInput from './components/image-input';
 import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
 
@@ -22,6 +23,7 @@ const App = () => {
 	const objectSearchRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
+	const [searchQuery, setSearchQuery] = useState('');
 	const [newCollectionName, setNewCollectionName] = useState('');
 	const [collections, setCollections] = useState(
 		JSON.parse(localStorage.getItem('collections')) || {}
@@ -75,8 +77,10 @@ const App = () => {
 	};
 
 	const searchObjects = async query => {
-		const searchQuery = query;
-		const request = await fetch(`${searchAPI}${searchQuery}`);
+		if (query !== searchQuery) {
+			setSearchQuery(query);
+		}
+		const request = await fetch(`${searchAPI}${query}`);
 		const response = await request.json();
 		if (response.objectIDs) {
 			const newObject = response.objectIDs[0];
@@ -215,13 +219,18 @@ const App = () => {
 					</a>
 				</div>
 				<div className="object-search__section">
-					<DebounceInput
-						className="object-search__input"
-						key="objectSearchBar"
-						placeholder="Search Objects"
-						debounceTimeout={500}
-						onChange={event => searchObjects(event.target.value)}
-					/>
+					<div className="object-search__inputs">
+						<DebounceInput
+							className="object-search__input"
+							key="objectSearchBar"
+							placeholder="Search Objects"
+							debounceTimeout={200}
+							value={searchQuery}
+							onChange={event => searchObjects(event.target.value)}
+						/>
+						<span>or</span>
+						<ImageInput searchObjects={searchObjects} />
+					</div>
 					<ActiveObject
 						savedObjects={savedObjects}
 						object={activeObject}
