@@ -8,11 +8,11 @@ ReactDOM.render(<App />, document.getElementById('app'));
 const textarea = document.getElementById('textarea');
 const canvas = document.getElementById('canvas');
 const progress = document.getElementById('progress');
-const accessionRegex = /\(\d+\.\d+.\d+.+\)/i;
+// const accessionRegex = /\(\d+\.\d+.\d+.+\)/i;
+const accessionRegex = /^[a-z]{0,4}?(.\d+(\.\d+)*$)/i;
 
-const formatAccessionNumber = string => {
-	// const paranthesisRegex = ;
-	return string.replaceAll(/\(|\)/g, '');
+const setAccessionNumber = accessionNumber => {
+	console.log(accessionNumber);
 };
 
 function drawImage(url) {
@@ -42,22 +42,24 @@ function drawImage(url) {
 			const { data } = await worker.recognize(canvas.toDataURL('image/png'));
 			await worker.terminate();
 			console.log(data);
-			const accessionNumber = formatAccessionNumber(
-				data.text.match(accessionRegex)[0]
-			);
-			console.log(accessionNumber);
-			textarea.value = data.text;
-			progress.innerText = `Accession number: ${accessionNumber}`;
+			data.lines.forEach(line => {
+				const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
+				if (firstChunkOfText.match(accessionRegex)) {
+					setAccessionNumber(firstChunkOfText);
+				}
+			});
 		})();
 	};
 }
 
 document.querySelector('input[type="file"]').onchange = function () {
-	const img = this.files[0];
-	const reader = new FileReader();
-	reader.readAsDataURL(img);
+	if (this.files) {
+		const img = this.files[0];
+		const reader = new FileReader();
+		reader.readAsDataURL(img);
 
-	reader.onload = function () {
-		drawImage(reader.result);
-	};
+		reader.onload = () => {
+			drawImage(reader.result);
+		};
+	}
 };

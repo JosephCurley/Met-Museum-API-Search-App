@@ -10,7 +10,7 @@ const url = new URL(`${window.location}`);
 const params = new URLSearchParams(url.search.slice(1));
 
 const searchAPI =
-	'https://collectionapi.metmuseum.org/public/collection/v1/search?q=';
+	'https://collectionapi.metmuseum.org/public/collection/v1/search?isOnView=true?q=';
 
 const objectAPI =
 	'https://collectionapi.metmuseum.org/public/collection/v1/objects/';
