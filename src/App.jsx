@@ -3,6 +3,7 @@ import { hot } from 'react-hot-loader/root';
 import { DebounceInput } from 'react-debounce-input';
 import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
+import CollectionItem from './components/collection-item';
 import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
 
@@ -17,12 +18,17 @@ const objectAPI =
 
 const App = () => {
 	const objectsGridRef = React.createRef();
+	const collectionsRef = React.createRef();
+	const objectSearchRef = React.createRef();
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
+	const [newCollectionName, setNewCollectionName] = useState('');
+	const [collections, setCollections] = useState(
+		JSON.parse(localStorage.getItem('collections')) || {}
+	);
 	const [savedObjects, setSavedObjects] = useState(
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
-
 	const [activeObject, setActiveObject] = useState(
 		Object.keys(savedObjects).length === 0 && defaultObject
 	);
@@ -47,18 +53,16 @@ const App = () => {
 	};
 
 	const fetchAndSave = async objectID => {
-		localStorage.setItem('savedObjects', JSON.stringify({}));
 		const newObject = await fetchObjects(objectID);
 		const newObjectReduced = (({ title, primaryImageSmall }) => ({
 			title,
 			primaryImageSmall,
 		}))(newObject);
-		const objectOfSavedObjects = JSON.parse(
-			localStorage.getItem('savedObjects') || {}
-		);
-		objectOfSavedObjects[newObject.objectID] = newObjectReduced;
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+
+		const storedSavedObjects = JSON.parse(localStorage.getItem('savedObjects'));
+
+		storedSavedObjects[newObject.objectID] = newObjectReduced;
+		setSavedObjects(storedSavedObjects);
 	};
 
 	const handleNewActiveObject = async objectID => {
@@ -80,7 +84,7 @@ const App = () => {
 		}
 	};
 
-	const addItemToStorage = () => {
+	const handleSaveObject = () => {
 		const newObject = {
 			title: activeObject.title,
 			primaryImageSmall: activeObject.primaryImageSmall,
@@ -89,34 +93,32 @@ const App = () => {
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
 		objectOfSavedObjects[activeObject.objectID] = newObject;
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects(objectOfSavedObjects);
 	};
 
-	const removeItemFromStorage = () => {
+	const handleRemoveObject = () => {
 		const objectOfSavedObjects =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
 		delete objectOfSavedObjects[activeObject.objectID];
-		localStorage.setItem('savedObjects', JSON.stringify(objectOfSavedObjects));
-		setSavedObjects(JSON.parse(localStorage.getItem('savedObjects')));
+		setSavedObjects(objectOfSavedObjects);
 	};
 
-	const updateLocalStorage = () => {
+	const clearSavedObjects = () => {
+		setSavedObjects({});
+	};
+
+	const handleSavedObjectChange = () => {
 		document.activeElement.blur();
-		if (!localStorage.getItem('savedObjects')) {
-			localStorage.setItem('session', JSON.stringify({}));
-		}
 
 		if (savedObjects[activeObject.objectID]) {
-			removeItemFromStorage();
+			handleRemoveObject();
 		} else {
-			addItemToStorage();
+			handleSaveObject();
 		}
 	};
 
-	const backToTop = () => {
-		objectsGridRef.current.scrollIntoView({
+	const scrollToRef = ref => {
+		ref.current.scrollIntoView({
 			behavior: 'smooth',
 		});
 	};
@@ -126,54 +128,155 @@ const App = () => {
 		setSharableURLCurrent(true);
 	};
 
+	const createCollection = (
+		newName = newCollectionName,
+		objects = savedObjects
+	) => {
+		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
+		const collectionObjects = objects;
+		const newCollection = {
+			collectionObjects,
+		};
+
+		tempCollectionRef[newName] = newCollection;
+		setCollections(tempCollectionRef);
+	};
+
+	const removeCollection = collectionName => {
+		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
+		delete tempCollectionRef[collectionName];
+		setCollections(tempCollectionRef);
+	};
+
+	const setActiveObjectsToCollection = collectionName => {
+		const newSavedObjects = collections[collectionName].collectionObjects;
+		setSavedObjects(newSavedObjects);
+
+		if (Object.keys(newSavedObjects)[0]) {
+			handleNewActiveObject(Object.keys(newSavedObjects)[0]);
+		}
+	};
+
+	const handleDataFromURL = objectsFromURL => {
+		if (Object.keys(savedObjects).length !== 0) {
+			createCollection('Unsaved Collection');
+			clearSavedObjects();
+		}
+		const arrayOfSavedObjectsFromURL = JSON.parse(
+			decodeURIComponent(objectsFromURL)
+		);
+		arrayOfSavedObjectsFromURL.forEach(objectID => {
+			fetchAndSave(objectID);
+		});
+		handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
+	};
+
 	useEffect(() => {
+		// If savedObjects doesn't exist in localStorage, create it.
+		if (localStorage.getItem('savedObjects') === null) {
+			localStorage.setItem('savedObjects', {});
+		}
+		// Also Set Collections
+		if (localStorage.getItem('collections') === null) {
+			localStorage.setItem('collections', {});
+		}
+		// If there are obects in the URL, set SavedObjects to match.
 		const objectsFromURL = params.get('o');
 		if (objectsFromURL) {
-			const arrayOfSavedObjectsFromURL = JSON.parse(
-				decodeURIComponent(objectsFromURL)
-			);
-			arrayOfSavedObjectsFromURL.forEach(objectID => {
-				fetchAndSave(objectID);
-			});
-			handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
+			handleDataFromURL(objectsFromURL);
+			window.history.replaceState({}, '', `${url.origin}`);
 		} else if (Object.keys(savedObjects).length > 0) {
+			// Set Initial Object to one from the user's saved objects.
 			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
-		window.history.replaceState({}, '', `${url.origin}`);
 	}, []);
 
 	useEffect(() => {
+		localStorage.setItem('savedObjects', JSON.stringify(savedObjects));
 		setURL();
 		setSharableURLCurrent(false);
 	}, [savedObjects]);
 
+	useEffect(() => {
+		localStorage.setItem('collections', JSON.stringify(collections));
+	}, [collections]);
+
 	return (
 		<div className="object-search-app">
-			<section className="object-search__section">
-				<h1>The Met Object Look Up</h1>
-				<DebounceInput
-					className="object-search__input"
-					key="objectSearchBar"
-					placeholder="Search Objects"
-					debounceTimeout={500}
-					onChange={event => searchObjects(event.target.value)}
-				/>
-				<ActiveObject
-					savedObjects={savedObjects}
-					object={activeObject}
-					updateLocalStorage={updateLocalStorage}
-				/>
-			</section>
-			<section className="saved-objects">
-				<div className="saved-objects__title-bar">
+			<main className="main__section" ref={objectSearchRef}>
+				<div className="main__title-bar">
+					<a
+						tabIndex="0"
+						className="main__title-link"
+						onClick={() => scrollToRef(objectSearchRef)}
+						onKeyDown={e => e.key === 'Enter' && scrollToRef(objectSearchRef)}
+						role="button">
+						<h1 className="main-title">Object Look Up</h1>
+					</a>
+				</div>
+				<div className="object-search__section">
+					<DebounceInput
+						className="object-search__input"
+						key="objectSearchBar"
+						placeholder="Search Objects"
+						debounceTimeout={500}
+						onChange={event => searchObjects(event.target.value)}
+					/>
+					<ActiveObject
+						savedObjects={savedObjects}
+						object={activeObject}
+						handleSavedObjectChange={handleSavedObjectChange}
+					/>
+				</div>
+			</main>
+			<section className="sidebar">
+				<div className="sidebar__title">
 					<h1 className="saved-objects__header">
 						<a
 							tabIndex="0"
-							className="saved-objects__top-link"
-							onClick={() => backToTop()}
-							onKeyDown={e => e.key === 'Enter' && backToTop()}
+							className="sidebar__title-link"
+							onClick={() => scrollToRef(objectsGridRef)}
+							onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
 							role="button">
 							Saved Objects
+						</a>
+					</h1>
+					{Object.keys(savedObjects).length !== 0 && (
+						<button
+							type="button"
+							className="saved-objects__copy-link"
+							onKeyDown={e => e.key === 'Enter' && clearSavedObjects}
+							onClick={clearSavedObjects}>
+							Clear Objects
+						</button>
+					)}
+				</div>
+				<div className="sidebar__section">
+					<div className="saved-objects__grid" ref={objectsGridRef}>
+						{Object.keys(savedObjects).map(savedObject => {
+							return (
+								<SavedObject
+									key={savedObject}
+									objectNumber={savedObject}
+									handleNewActiveObject={handleNewActiveObject}
+									objectTitle={savedObjects[savedObject].title}
+									primaryImageSmall={
+										savedObjects[savedObject].primaryImageSmall
+									}
+								/>
+							);
+						})}
+					</div>
+				</div>
+				<div className="sidebar__title sidebar__title--collections">
+					<h1 className="saved-objects__header">
+						<a
+							tabIndex="0"
+							className="sidebar__title-link"
+							onClick={() => scrollToRef(collectionsRef)}
+							onKeyDown={e => e.key === 'Enter' && scrollToRef(collectionsRef)}
+							role="button">
+							Collections
 						</a>
 					</h1>
 					{sharableURL && (
@@ -182,22 +285,50 @@ const App = () => {
 							className="saved-objects__copy-link"
 							onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
 							onClick={copyURLtoClipboard}>
-							{sharableURLCurrent ? 'Copied!' : 'Copy Sharable URL'}
+							{sharableURLCurrent ? 'Copied!' : 'Copy Collection Link'}
 						</button>
 					)}
 				</div>
-				<div className="saved-objects__grid" ref={objectsGridRef}>
-					{Object.keys(savedObjects).map(savedObject => {
-						return (
-							<SavedObject
-								key={savedObject}
-								objectNumber={savedObject}
-								handleNewActiveObject={handleNewActiveObject}
-								objectTitle={savedObjects[savedObject].title}
-								primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
+				<div className="sidebar__section">
+					<div ref={collectionsRef}>
+						<div className="collections__save-bar">
+							<input
+								className="collection-input"
+								key="newCollectionNameBar"
+								placeholder="Collection Name"
+								value={newCollectionName}
+								onKeyDown={e => e.key === 'Enter' && createCollection()}
+								onChange={event => setNewCollectionName(event.target.value)}
 							/>
-						);
-					})}
+							<button
+								type="button"
+								className="collection__save-button"
+								onClick={() => createCollection()}
+								onKeyDown={e => e.key === 'Enter' && createCollection()}>
+								Save Collection
+							</button>
+						</div>
+						<div>
+							<ul className="collection-items">
+								{Object.keys(collections).map(collection => {
+									return (
+										<CollectionItem
+											key={collection}
+											removeCollection={removeCollection}
+											setActiveObjectsToCollection={
+												setActiveObjectsToCollection
+											}
+											collectionLength={
+												Object.keys(collections[collection].collectionObjects)
+													.length
+											}
+											collectionName={collection}
+										/>
+									);
+								})}
+							</ul>
+						</div>
+					</div>
 				</div>
 			</section>
 		</div>
