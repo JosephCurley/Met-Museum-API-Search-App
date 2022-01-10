@@ -3,33 +3,36 @@ import PropTypes from 'prop-types';
 import { createWorker } from 'tesseract.js';
 
 const ImageInput = ({ searchObjects }) => {
-	const [isProcessing, setIsprocessing] = useState(false);
+	const [imageInputText, setImageInputText] = useState('Scan Accession #');
 	const accessionRegex = /^[a-z]{0,4}?(.\d+(\.\d+)*$)/i;
 
-	const setAccessionNumber = accessionNumber => {
-		searchObjects(accessionNumber);
-	};
-
 	const readImage = file => {
+		let success = false;
+		setImageInputText('Processing');
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
 			const worker = createWorker();
 
 			(async () => {
-				setIsprocessing(true);
 				await worker.load();
 				await worker.loadLanguage('eng');
 				await worker.initialize('eng');
 				const { data } = await worker.recognize(reader.result);
 				await worker.terminate();
-				await setIsprocessing(false);
 				data.lines.forEach(line => {
 					const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
 					if (firstChunkOfText.match(accessionRegex)) {
-						setAccessionNumber(firstChunkOfText);
+						searchObjects(firstChunkOfText);
+						success = true;
 					}
 				});
+				if (!success) {
+					setImageInputText('Error Reading Image');
+				} else {
+					console.log('lol');
+					setImageInputText('Scan Accession #');
+				}
 			})();
 		};
 	};
@@ -51,9 +54,8 @@ const ImageInput = ({ searchObjects }) => {
 					type="file"
 					className="image-input__input"
 				/>
-				{isProcessing ? 'Reading Image' : 'Scan Accession #'}
+				{imageInputText}
 			</label>
-			<div className="image-input__image"></div>
 		</div>
 	);
 };
