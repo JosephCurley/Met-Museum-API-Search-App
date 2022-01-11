@@ -24,6 +24,8 @@ const App = () => {
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 	const [activeCollectionName, setActiveCollectionName] = useState('');
+	const [editingExistingCollection, setEditingExistingCollection] =
+		useState(false);
 	const [collections, setCollections] = useState(
 		JSON.parse(localStorage.getItem('collections')) || {}
 	);
@@ -142,6 +144,7 @@ const App = () => {
 
 		tempCollectionRef[newName] = newCollection;
 		setCollections(tempCollectionRef);
+		setEditingExistingCollection(true);
 	};
 
 	const removeCollection = collectionName => {
@@ -206,6 +209,13 @@ const App = () => {
 			handleNewActiveObject(Object.keys(savedObjects)[0]);
 		}
 	}, []);
+
+	useEffect(() => {
+		const isExistingName = Object.keys(collections).some(collection => {
+			return collection === activeCollectionName;
+		});
+		setEditingExistingCollection(isExistingName);
+	}, [activeCollectionName]);
 
 	useEffect(() => {
 		localStorage.setItem('savedObjects', JSON.stringify(savedObjects));
@@ -279,10 +289,12 @@ const App = () => {
 						/>
 						<button
 							type="button"
-							className="button button--secondary"
+							className="button button--secondary collections__save-button"
 							onClick={() => createCollection()}
 							onKeyDown={e => e.key === 'Enter' && createCollection()}>
-							Save Collection
+							{editingExistingCollection
+								? 'Update Collection'
+								: 'Save Collection'}
 						</button>
 					</div>
 					<div className="saved-objects__grid" ref={objectsGridRef}>
