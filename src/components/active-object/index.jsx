@@ -27,7 +27,7 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 							onKeyDown={e => e.key === 'Enter' && handleSavedObjectChange}
 							className="active-object__button active-object__button--save button button--primary"
 							type="submit">
-							Save 🤍
+							Save &#9829;
 						</button>
 					)}
 					<a
@@ -54,7 +54,7 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 						dangerouslySetInnerHTML={{ __html: object.objectName }}
 					/>
 				</div>
-				{object.artistDisplayName && (
+				{object.artistRole && object.artistDisplayName && (
 					<div className="active-object__info">
 						<span className="active-object__key">{object.artistRole}: </span>
 						<span className="active-object__value">
