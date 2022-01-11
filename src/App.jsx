@@ -20,9 +20,10 @@ const App = () => {
 	const objectsGridRef = React.createRef();
 	const collectionsRef = React.createRef();
 	const objectSearchRef = React.createRef();
+
 	const [sharableURL, setSharableURL] = useState();
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
-	const [newCollectionName, setNewCollectionName] = useState('');
+	const [activeCollectionName, setActiveCollectionName] = useState('');
 	const [collections, setCollections] = useState(
 		JSON.parse(localStorage.getItem('collections')) || {}
 	);
@@ -67,7 +68,6 @@ const App = () => {
 
 	const handleNewActiveObject = async objectID => {
 		document.querySelector('body').scrollIntoView({
-			alignToTop: true,
 			behavior: 'smooth',
 		});
 		const newActiveObject = await fetchObjects(objectID);
@@ -90,20 +90,21 @@ const App = () => {
 			primaryImageSmall: activeObject.primaryImageSmall,
 		};
 
-		const objectOfSavedObjects =
+		const tempObjectsRef =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
-		objectOfSavedObjects[activeObject.objectID] = newObject;
-		setSavedObjects(objectOfSavedObjects);
+		tempObjectsRef[activeObject.objectID] = newObject;
+		setSavedObjects(tempObjectsRef);
 	};
 
 	const handleRemoveObject = () => {
-		const objectOfSavedObjects =
+		const tempObjectsRef =
 			JSON.parse(localStorage.getItem('savedObjects')) || {};
-		delete objectOfSavedObjects[activeObject.objectID];
-		setSavedObjects(objectOfSavedObjects);
+		delete tempObjectsRef[activeObject.objectID];
+		setSavedObjects(tempObjectsRef);
 	};
 
 	const clearSavedObjects = () => {
+		setActiveCollectionName('');
 		setSavedObjects({});
 	};
 
@@ -119,6 +120,7 @@ const App = () => {
 
 	const scrollToRef = ref => {
 		ref.current.scrollIntoView({
+			block: 'start',
 			behavior: 'smooth',
 		});
 	};
@@ -129,7 +131,7 @@ const App = () => {
 	};
 
 	const createCollection = (
-		newName = newCollectionName,
+		newName = activeCollectionName,
 		objects = savedObjects
 	) => {
 		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
@@ -148,8 +150,22 @@ const App = () => {
 		setCollections(tempCollectionRef);
 	};
 
-	const setActiveObjectsToCollection = collectionName => {
+	const saveCollectionToNewName = (count = 1) => {
+		const newCollectionName =
+			count === 1 ? `Unnamed Collection` : `Unnamed Collection ${count}`;
+		if (newCollectionName in collections) {
+			saveCollectionToNewName(count + 1);
+		} else {
+			createCollection(newCollectionName);
+		}
+	};
+
+	const handleSelectCollection = collectionName => {
+		if (!activeCollectionName) {
+			saveCollectionToNewName();
+		}
 		const newSavedObjects = collections[collectionName].collectionObjects;
+		setActiveCollectionName(collectionName);
 		setSavedObjects(newSavedObjects);
 
 		if (Object.keys(newSavedObjects)[0]) {
@@ -159,7 +175,7 @@ const App = () => {
 
 	const handleDataFromURL = objectsFromURL => {
 		if (Object.keys(savedObjects).length !== 0) {
-			createCollection('Unsaved Collection');
+			saveCollectionToNewName();
 			clearSavedObjects();
 		}
 		const arrayOfSavedObjectsFromURL = JSON.parse(
@@ -252,6 +268,23 @@ const App = () => {
 					)}
 				</div>
 				<div className="sidebar__section">
+					<div className="collections__save-bar">
+						<input
+							className="collection-input"
+							key="activeCollectionNameBar"
+							placeholder="Collection Name"
+							value={activeCollectionName}
+							onKeyDown={e => e.key === 'Enter' && createCollection()}
+							onChange={event => setActiveCollectionName(event.target.value)}
+						/>
+						<button
+							type="button"
+							className="button button--secondary"
+							onClick={() => createCollection()}
+							onKeyDown={e => e.key === 'Enter' && createCollection()}>
+							Save Collection
+						</button>
+					</div>
 					<div className="saved-objects__grid" ref={objectsGridRef}>
 						{Object.keys(savedObjects).map(savedObject => {
 							return (
@@ -291,23 +324,6 @@ const App = () => {
 				</div>
 				<div className="sidebar__section">
 					<div ref={collectionsRef}>
-						<div className="collections__save-bar">
-							<input
-								className="collection-input"
-								key="newCollectionNameBar"
-								placeholder="Collection Name"
-								value={newCollectionName}
-								onKeyDown={e => e.key === 'Enter' && createCollection()}
-								onChange={event => setNewCollectionName(event.target.value)}
-							/>
-							<button
-								type="button"
-								className="collection__save-button"
-								onClick={() => createCollection()}
-								onKeyDown={e => e.key === 'Enter' && createCollection()}>
-								Save Collection
-							</button>
-						</div>
 						<div>
 							<ul className="collection-items">
 								{Object.keys(collections).map(collection => {
@@ -315,9 +331,7 @@ const App = () => {
 										<CollectionItem
 											key={collection}
 											removeCollection={removeCollection}
-											setActiveObjectsToCollection={
-												setActiveObjectsToCollection
-											}
+											handleSelectCollection={handleSelectCollection}
 											collectionLength={
 												Object.keys(collections[collection].collectionObjects)
 													.length

@@ -51,9 +51,14 @@ h1 {
 	@include primary-button--filled();
 }
 
-.button--secondary {
+.button--ghost{
 	@include primary-button();
 	@include primary-button--ghost-dark();
+}
+
+.button--secondary {
+	@include secondary-button();
+	@include secondary-button--ghost-dark();
 }
 
 .button--tertiary {
@@ -146,16 +151,6 @@ h1 {
 	display: flex;
 	grid-column-gap: $spacing-micro;
 	grid-row-gap: $spacing-micro;
-}
-
-.collection__save-button {
-	@include primary-button();
-	@include primary-button--ghost-dark();
-	flex-shrink: 0;
-	height: 40px;
-	line-height: 0;
-	min-width: 100px;
-	white-space: nowrap;
 }
 
 .collection-input {

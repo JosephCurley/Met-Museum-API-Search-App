@@ -4,16 +4,16 @@ import PropTypes from 'prop-types';
 const CollectionItem = ({
 	collectionName,
 	collectionLength,
-	setActiveObjectsToCollection,
+	handleSelectCollection,
 	removeCollection,
 }) => (
 	<li className="collection-item">
 		<button
 			type="button"
 			className="collection-item__button"
-			onClick={() => setActiveObjectsToCollection(collectionName)}
+			onClick={() => handleSelectCollection(collectionName)}
 			onKeyDown={e =>
-				e.key === 'Enter' && setActiveObjectsToCollection(collectionName)
+				e.key === 'Enter' && handleSelectCollection(collectionName)
 			}>
 			<span className="collection-item__title">{collectionName}</span>
 			<span className="collection-item__count">
@@ -32,7 +32,7 @@ const CollectionItem = ({
 
 CollectionItem.propTypes = {
 	removeCollection: PropTypes.func,
-	setActiveObjectsToCollection: PropTypes.func,
+	handleSelectCollection: PropTypes.func,
 	collectionLength: PropTypes.number,
 	collectionName: PropTypes.string,
 };
