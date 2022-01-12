@@ -169,6 +169,10 @@ h1 {
 	margin-bottom: $spacing-xxs;
 }
 
+.collections__save-button {
+	min-width: 140px;
+}
+
 .collection-items {
 	list-style: none;
 	padding-left: 0;
