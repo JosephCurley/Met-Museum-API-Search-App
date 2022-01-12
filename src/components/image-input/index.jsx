@@ -7,15 +7,15 @@ import { createWorker } from 'tesseract.js';
 const ImageInput = ({ searchObjects }) => {
 	const [imageInputText, setImageInputText] = useState('Scan Accession #');
 	const accessionRegex = /^[a-z]{0,4}?(.\d+(\.\d+)*$)/i;
+
 	const worker = createWorker({
 		logger: m => {
 			console.log(m);
 			let text = "Processing...";
-			if (m.status == "recognizing text") {
+			if (m.status === "recognizing text") {
 				text += ` ${Math.floor(m.progress * 100)}%`;
 			}
 			setImageInputText(text);
-			// console.log(num);
 		},
 	});
 
@@ -23,26 +23,24 @@ const ImageInput = ({ searchObjects }) => {
 		let success = false;
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
-		reader.onload = () => {
-			(async () => {
-				await worker.load();
-				await worker.loadLanguage('eng');
-				await worker.initialize('eng');
-				const { data } = await worker.recognize(reader.result);
-				await worker.terminate();
-				data.lines.forEach(line => {
-					const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
-					if (firstChunkOfText.match(accessionRegex)) {
-						searchObjects(firstChunkOfText);
-						success = true;
-					}
-				});
-				if (!success) {
-					setImageInputText('Error Reading Image');
-				} else {
-					setImageInputText('Scan Accession #');
+		reader.onload = async () => {
+			await worker.load();
+			await worker.loadLanguage('eng');
+			await worker.initialize('eng');
+			const { data } = await worker.recognize(reader.result);
+			await worker.terminate();
+			data.lines.forEach(line => {
+				const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
+				if (firstChunkOfText.match(accessionRegex)) {
+					searchObjects(firstChunkOfText);
+					success = true;
 				}
-			})();
+			});
+			if (!success) {
+				setImageInputText('Error Reading Image');
+			} else {
+				setImageInputText('Scan Accession #');
+			};
 		};
 	};
 
@@ -76,16 +74,15 @@ const ImageInput = ({ searchObjects }) => {
 				const ctx = canvas.getContext('2d');
 				// Actual resizing
 				ctx.drawImage(img, 0, 0, width, height);
-				canvas.toBlob(blob => {
-					readImage(blob);
-				});
+				canvas.toBlob(readImage);
 			};
 			img.src = e.target.result;
 		};
 		reader.readAsDataURL(imageFile);
 	};
 
-	const handleOnChange = file => {
+	const handleOnChange = e => {
+		const file = e.target.files[0];
 		if (file && file.type.includes('image')) {
 			setImageInputText('Processing');
 			resizeImage(file);
@@ -98,7 +95,7 @@ const ImageInput = ({ searchObjects }) => {
 				htmlFor="image-input"
 				className="image-input__label button button--secondary">
 				<input
-					onChange={e => handleOnChange(e.target.files[0])}
+					onChange={handleOnChange}
 					id="image-input"
 					type="file"
 					capture="environment"
