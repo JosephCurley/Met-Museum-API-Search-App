@@ -1,5 +1,6 @@
 // import logo from './logo.svg';
 // import './App.css';
+import './app.scss';
 
 import React, { useState, useEffect } from 'react';
 import { DebounceInput } from 'react-debounce-input';
@@ -7,7 +8,6 @@ import ActiveObject from './components/active-object';
 import SavedObject from './components/saved-object';
 import CollectionItem from './components/collection-item';
 import defaultObject from './helpers/defaultObjectModel';
-// import './app.scss';
 
 const url = new URL(`${window.location}`);
 const params = new URLSearchParams(url.search.slice(1));

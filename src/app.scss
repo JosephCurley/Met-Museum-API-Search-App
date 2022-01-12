@@ -1,7 +1,7 @@
 $bp-small-screen: 850px;
 $sidebar-title-height: 60px;
 @import "~@metmuseum/marble/src/base/base";
-@import "font-declarations";
+@import "./fonts/font-declarations.scss";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
 @import "./components/collection-item/collection-item";
