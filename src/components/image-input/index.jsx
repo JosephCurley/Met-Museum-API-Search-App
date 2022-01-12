@@ -21,6 +21,7 @@ const ImageInput = ({ searchObjects }) => {
 				const { data } = await worker.recognize(reader.result);
 				await worker.terminate();
 				data.lines.forEach(line => {
+					alert(line.text);
 					const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
 					if (firstChunkOfText.match(accessionRegex)) {
 						searchObjects(firstChunkOfText);
@@ -37,6 +38,7 @@ const ImageInput = ({ searchObjects }) => {
 	};
 
 	const handleOnChange = file => {
+		alert(file.type);
 		if (file && file.type.includes('image')) {
 			readImage(file);
 		}
