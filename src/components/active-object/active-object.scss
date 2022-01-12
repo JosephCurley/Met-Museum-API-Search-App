@@ -45,3 +45,19 @@
 	grid-column-gap: $spacing-xxs;
 	grid-row-gap: $spacing-xxs;
 }
+
+.active-object__image-container {
+	margin-left: -$spacing-component-margin;
+	margin-right: -$spacing-component-margin;
+	overflow: scroll;
+	margin-bottom: $spacing-xxs;
+	padding-bottom: $spacing-xxs;
+}
+
+.active-object__images {
+	margin-left: $spacing-component-margin;
+	margin-right: $spacing-component-margin;
+	white-space: nowrap;
+	display: flex;
+	grid-column-gap: $spacing-xxs;
+}
