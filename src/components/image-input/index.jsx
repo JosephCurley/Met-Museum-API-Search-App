@@ -90,6 +90,7 @@ const ImageInput = ({ searchObjects }) => {
 					onChange={e => handleOnChange(e.target.files[0])}
 					id="image-input"
 					type="file"
+					capture="environment"
 					accept="image/jpeg,image/png"
 					className="image-input__input"
 				/>
