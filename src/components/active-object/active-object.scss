@@ -60,6 +60,13 @@
 	white-space: nowrap;
 	display: flex;
 	grid-column-gap: $spacing-xxs;
+
+	&:after {
+	  content: "";
+	  display: block;
+	  height: 1px;
+	  min-width: calc(#{$spacing-component-margin} - #{$spacing-xxs});
+	}
 }
 
 
