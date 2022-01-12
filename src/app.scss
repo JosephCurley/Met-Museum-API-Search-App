@@ -5,6 +5,7 @@ $sidebar-title-height: 60px;
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
 @import "./components/collection-item/collection-item";
+@import "./components/image-input/image-input";
 @import "./components/sidebar/sidebar";
 
 * {
@@ -51,9 +52,14 @@ h1 {
 	@include primary-button--filled();
 }
 
-.button--secondary {
+.button--ghost {
 	@include primary-button();
 	@include primary-button--ghost-dark();
+}
+
+.button--secondary {
+	@include secondary-button();
+	@include secondary-button--ghost-dark();
 }
 
 .button--tertiary {
@@ -68,6 +74,13 @@ h1 {
 	@media (orientation: landscape) {
 		flex-direction: row;
 	}
+}
+
+.object-search__inputs {
+	align-items: center;
+	display: flex;
+	grid-column-gap: $spacing-micro;
+	margin-bottom: $spacing-xxs;
 }
 
 .main__section {
@@ -116,10 +129,9 @@ h1 {
 }
 
 .object-search__input {
-	width: 100%;
+	flex-basis: 100%;
 	padding: $spacing-micro;
 	border-radius: 20px;
-	margin-bottom: $spacing-xxs;
 }
 
 .saved-objects__header {
@@ -148,16 +160,6 @@ h1 {
 	grid-row-gap: $spacing-micro;
 }
 
-.collection__save-button {
-	@include primary-button();
-	@include primary-button--ghost-dark();
-	flex-shrink: 0;
-	height: 40px;
-	line-height: 0;
-	min-width: 100px;
-	white-space: nowrap;
-}
-
 .collection-input {
 	flex-shrink: 1;
 	flex-grow: 1;
@@ -165,6 +167,10 @@ h1 {
 	padding: $spacing-micro;
 	border-radius: 20px;
 	margin-bottom: $spacing-xxs;
+}
+
+.collections__save-button {
+	min-width: 140px;
 }
 
 .collection-items {
