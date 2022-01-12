@@ -7,6 +7,7 @@ import CollectionItem from './components/collection-item';
 import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
 
+//Just a test comment
 const url = new URL(`${window.location}`);
 const params = new URLSearchParams(url.search.slice(1));
 
