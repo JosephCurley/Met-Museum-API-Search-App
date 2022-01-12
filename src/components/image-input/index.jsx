@@ -8,7 +8,6 @@ const ImageInput = ({ searchObjects }) => {
 
 	const readImage = file => {
 		let success = false;
-		setImageInputText('Processing');
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
@@ -21,7 +20,6 @@ const ImageInput = ({ searchObjects }) => {
 				const { data } = await worker.recognize(reader.result);
 				await worker.terminate();
 				data.lines.forEach(line => {
-					alert(line.text);
 					const firstChunkOfText = line.text.split(' ')[0].replace(/\n/g, '');
 					if (firstChunkOfText.match(accessionRegex)) {
 						searchObjects(firstChunkOfText);
@@ -37,10 +35,49 @@ const ImageInput = ({ searchObjects }) => {
 		};
 	};
 
+	const resizeImage = imageFile => {
+		const reader = new FileReader();
+		reader.onload = e => {
+			const img = document.createElement('img');
+			img.onload = () => {
+				const MAX_WIDTH = 1000;
+				const MAX_HEIGHT = 1000;
+
+				let { width } = img;
+				let { height } = img;
+
+				// Change the resizing logic
+				if (width > height) {
+					if (width > MAX_WIDTH) {
+						height *= MAX_WIDTH / width;
+						width = MAX_WIDTH;
+					}
+				} else if (height > MAX_HEIGHT) {
+					width *= MAX_HEIGHT / height;
+					height = MAX_HEIGHT;
+				}
+
+				// Dynamically create a canvas element
+				const canvas = document.createElement('canvas');
+				canvas.width = width;
+				canvas.height = height;
+				// var canvas = document.getElementById("canvas");
+				const ctx = canvas.getContext('2d');
+				// Actual resizing
+				ctx.drawImage(img, 0, 0, width, height);
+				canvas.toBlob(blob => {
+					readImage(blob);
+				});
+			};
+			img.src = e.target.result;
+		};
+		reader.readAsDataURL(imageFile);
+	};
+
 	const handleOnChange = file => {
-		alert(file.type);
 		if (file && file.type.includes('image')) {
-			readImage(file);
+			setImageInputText('Processing');
+			resizeImage(file);
 		}
 	};
 
