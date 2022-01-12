@@ -39,7 +39,33 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 					</a>
 				</div>
 			</div>
-			{object.primaryImageSmall && (
+			{object.primaryImageSmall && object.additionalImages && (
+				<div className="active-object__image-container">
+					<div className="active-object__images" draggable="true">
+						<img
+							src={object.primaryImageSmall}
+							className="active-object__image active-object__image--multiple"
+							alt={object.objectName}
+						/>
+						{object.additionalImages.map(additionalImage => {
+							const smallImage = additionalImage.replace(
+								'original',
+								'web-large'
+							);
+							return (
+								<img
+									key={smallImage}
+									src={smallImage}
+									loading="lazy"
+									className="active-object__image active-object__image--multiple"
+									alt={object.objectName}
+								/>
+							);
+						})}
+					</div>
+				</div>
+			)}
+			{object.primaryImageSmall && !object.additionalImages && (
 				<img
 					src={object.primaryImageSmall}
 					className="active-object__image"

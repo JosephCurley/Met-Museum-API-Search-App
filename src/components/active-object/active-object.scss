@@ -45,3 +45,42 @@
 	grid-column-gap: $spacing-xxs;
 	grid-row-gap: $spacing-xxs;
 }
+
+.active-object__image-container {
+	margin-left: -$spacing-component-margin;
+	margin-right: -$spacing-component-margin;
+	overflow: auto;
+	margin-bottom: $spacing-xxs;
+	padding-bottom: $spacing-xxs;
+}
+
+.active-object__images {
+	margin-left: $spacing-component-margin;
+	margin-right: $spacing-component-margin;
+	white-space: nowrap;
+	display: flex;
+	grid-column-gap: $spacing-xxs;
+
+	&:after {
+	  content: "";
+	  display: block;
+	  height: 1px;
+	  min-width: calc(#{$spacing-component-margin} - #{$spacing-xxs});
+	}
+}
+
+
+.active-object__image-container::-webkit-scrollbar {
+	background: $color-white;
+	border-radius: 10px;
+	height: 5px;
+	width: 5px;
+}
+
+.active-object__image-container::-webkit-scrollbar-thumb {
+	background-color: $color-grey-700;
+	border-radius: 50px;
+	width: calc(200px + 2* #{$spacing-component-margin});
+	border-left: $spacing-component-margin solid $color-white;
+	border-right: $spacing-component-margin solid $color-white;
+}

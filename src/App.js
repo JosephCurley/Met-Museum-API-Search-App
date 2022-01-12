@@ -8,8 +8,7 @@ import CollectionItem from './components/collection-item';
 import ImageInput from './components/image-input';
 import defaultObject from './helpers/defaultObjectModel';
 import './app.scss';
-
-//Another Test line
+// Test change
 const url = new URL(`${window.location}`);
 const params = new URLSearchParams(url.search.slice(1));
 
