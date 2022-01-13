@@ -3,7 +3,6 @@
 	background-color: $color-white;
 	flex-basis: auto;
 	box-shadow: $shadow-active;
-	z-index: 99;
 	@media (orientation: landscape) {
 		flex-shrink: 0;
 		flex-basis: 300px;
@@ -11,6 +10,7 @@
 		overflow: scroll;
 		position: sticky;
 		top: 0;
+		z-index: 99;
 	}
 	@media (orientation: landscape) and (min-width: $bp-small-screen) {
 		flex-basis: 450px;
